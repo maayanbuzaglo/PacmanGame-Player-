@@ -1,4 +1,4 @@
-package GUI;
+package Ex4;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -95,7 +95,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		MenuBar menuBar = new MenuBar();
 		Menu icons = new Menu("Type"); //Icons - Pacman, Fruit.
-		MenuItem pacman = new MenuItem("Pacman");
+		MenuItem pacman = new MenuItem("Player");
 		MenuItem fruit = new MenuItem("Fruit");
 
 		Menu data = new Menu("Data"); //Data - Speed, Radius, Weight.
@@ -282,7 +282,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		//gets the pacman image.
 		try {
-			pacmanImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\OopNavigtion\\pictures\\pacman2.png"));
+			pacmanImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\pictures\\pacman.png"));
 		}
 
 		catch (IOException e) {
@@ -291,7 +291,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		//gets the fruit image.
 		try {
-			fruitImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\OopNavigtion\\pictures\\fruit2.png"));
+			fruitImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\pictures\\fruit.png"));
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -335,28 +335,14 @@ public class MyFrame extends JFrame implements MouseListener {
 			linePixel.add(pix);
 		}
 
-		//changes points of lines in game to pixels (point 2).
-		for (int i = 0; i < lList.size(); i++) {
-			Pixel pix = m.Point2Pixel(lList.get(i).getPoint2().x(), lList.get(i).getPoint2().y());
-			linePixel2.add(pix);
-		}
-
-		//draws all the lines on the list.
-		for (int i = 0; i < linePixel.size(); i++) {
-			Graphics2D g2 = (Graphics2D) g;
-			g2.setStroke(new BasicStroke(1));
-			g2.setColor(Color.orange);
-			g2.drawLine((int)linePixel.get(i).getX(), (int)linePixel.get(i).getY(), (int)linePixel2.get(i).getX(), (int)linePixel2.get(i).getY());
-		}
-
-		//draws all the pacmans on the list.
-		for (int i = 0; i < pacmanPixel.size(); i++) {
-			g.drawImage(pacmanImage, (int)pacmanPixel.get(i).getX(), (int)pacmanPixel.get(i).getY(), 30, 30, this);
-		}
-
 		//draws all the fruits on the list.
 		for (int i = 0; i < fruitPixel.size(); i++) {
 			g.drawImage(fruitImage, (int)fruitPixel.get(i).getX(), (int)fruitPixel.get(i).getY(), 40, 30, this);
+		}
+		
+		//draws all the pacmans on the list.
+		for (int i = 0; i < pacmanPixel.size(); i++) {
+			g.drawImage(pacmanImage, (int)pacmanPixel.get(i).getX(), (int)pacmanPixel.get(i).getY(), 30, 30, this);
 		}
 	}
 

@@ -3,7 +3,7 @@ package Pacman_game;
 import java.io.IOException;
 import java.util.ArrayList;
 import Coords.Coords;
-import GUI.MyFrame;
+import Ex4.MyFrame;
 import Pacman_game.Game;
 
 /*

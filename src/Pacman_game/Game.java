@@ -22,6 +22,8 @@ import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
  */
 public class Game {
 
+	public ArrayList<Box> Box_list; //Box list.
+	public ArrayList<Ghost> Ghost_list; //Ghost list.
 	public ArrayList<Pacman> Pacman_list; //Pacman list.
 	public ArrayList<Fruit> Fruit_list; //Fruit list.
 	public ArrayList<Line> Line_list; //Line list.
@@ -51,6 +53,10 @@ public class Game {
 	 */
 	public void readCsv(String file) {
 
+		Box b = new Box();
+		this.Box_list = b.ReadCsvFile(file); //reads the ghosts on the csv file.
+		Ghost g = new Ghost();
+		this.Ghost_list = g.ReadCsvFile(file); //reads the ghosts on the csv file.
 		Pacman p  = new Pacman();
 		this.Pacman_list = p.ReadCsvFile(file); //reads the fruits on the csv file.
 		Fruit f = new Fruit();
@@ -240,6 +246,12 @@ public class Game {
 
 	public void setFruit_list(ArrayList<Fruit> fruit_list) {
 		Fruit_list = fruit_list;
+	}
+	
+	public static void main(String[] args) {
+		
+		Game g = new Game();
+		g.readCsv("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example8.csv");
 	}
 
 }
