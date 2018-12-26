@@ -108,47 +108,104 @@ public class Map {
 	/*
 	 * This function updates the frame.
 	 */
-	public void changeFrame(Pixel p, ArrayList<Pixel> pList, ArrayList<Pixel> fList , ArrayList<Pixel> lList) {
+	public void changeFrame(Pixel p, Pixel player, ArrayList<Pixel> pList, ArrayList<Pixel> fList, ArrayList<Pixel> gList,
+			                ArrayList<Pixel> bList1, ArrayList<Pixel> bList2, ArrayList<Pixel> bList3, 
+			                ArrayList<Pixel> bList4) { 
 
 		ArrayList<Point3D> pTemp = new ArrayList<Point3D>();
 		ArrayList<Point3D> fTemp = new ArrayList<Point3D>();
-		ArrayList<Point3D> lTemp = new ArrayList<Point3D>();
+		ArrayList<Point3D> gTemp = new ArrayList<Point3D>(); 
+		ArrayList<Point3D> bTemp1 = new ArrayList<Point3D>();
+		ArrayList<Point3D> bTemp2 = new ArrayList<Point3D>();
+		ArrayList<Point3D> bTemp3 = new ArrayList<Point3D>();
+		ArrayList<Point3D> bTemp4 = new ArrayList<Point3D>();
+
+		Point3D mTemp = new Point3D(this.Pixel2Point(new Pixel(player.getX(), player.getY())));
 
 		for (int i = 0; i < pList.size(); i++) {
 			Pixel tmp = new Pixel(pList.get(i).getX(), pList.get(i).getY());
 			pTemp.add(this.Pixel2Point(tmp));
 		}
-		
+
 		for (int i = 0; i < fList.size(); i++) {
 			Pixel tmp = new Pixel(fList.get(i).getX(), fList.get(i).getY());
 			fTemp.add(this.Pixel2Point(tmp));
 		}
-		
-		for (int i = 0; i < lList.size(); i++) {
-			Pixel tmp = new Pixel(lList.get(i).getX(), lList.get(i).getY());
-			lTemp.add(this.Pixel2Point(tmp));
+
+		for (int i = 0; i < gList.size(); i++) {
+			Pixel tmp = new Pixel(gList.get(i).getX(), gList.get(i).getY());
+			gTemp.add(this.Pixel2Point(tmp));
 		}
 		
+		for (int i = 0; i < bList1.size(); i++) {
+			Pixel tmp = new Pixel(bList1.get(i).getX(), bList1.get(i).getY());
+			bTemp1.add(this.Pixel2Point(tmp));
+		}
+		
+		for (int i = 0; i < bList2.size(); i++) {
+			Pixel tmp = new Pixel(bList2.get(i).getX(), bList2.get(i).getY());
+			bTemp2.add(this.Pixel2Point(tmp));
+		}
+		
+		for (int i = 0; i < bList3.size(); i++) {
+			Pixel tmp = new Pixel(bList3.get(i).getX(), bList3.get(i).getY());
+			bTemp3.add(this.Pixel2Point(tmp));
+		}
+		
+		for (int i = 0; i < bList4.size(); i++) {
+			Pixel tmp = new Pixel(bList4.get(i).getX(), bList4.get(i).getY());
+			bTemp4.add(this.Pixel2Point(tmp));
+		}
+
 		this.setImage_weight((int)p.getX());
 		this.setImage_height((int)p.getY());
+
+		Pixel mtmp = this.Point2Pixel(mTemp.x(), mTemp.y());
+		player.setX(mtmp.getX());
+		player.setY(mtmp.getY());
 
 		for (int i = 0; i < pTemp.size(); i++) {
 			Pixel tmp = this.Point2Pixel(pTemp.get(i).x(), pTemp.get(i).y());
 			pList.get(i).setX(tmp.getX());
 			pList.get(i).setY(tmp.getY());
 		}
-		
+
 		for (int i = 0; i < fTemp.size(); i++) {
 			Pixel tmp = this.Point2Pixel(fTemp.get(i).x(), fTemp.get(i).y());
 			fList.get(i).setX(tmp.getX());
 			fList.get(i).setY(tmp.getY());
 		}
-		
-		for (int i = 0; i < lTemp.size(); i++) {
-			Pixel tmp = this.Point2Pixel(lTemp.get(i).x(), lTemp.get(i).y());
-			lList.get(i).setX(tmp.getX());
-			lList.get(i).setY(tmp.getY());
+
+		for (int i = 0; i < gTemp.size(); i++) {
+			Pixel tmp = this.Point2Pixel(gTemp.get(i).x(), gTemp.get(i).y());
+			gList.get(i).setX(tmp.getX());
+			gList.get(i).setY(tmp.getY());
 		}
+		
+		for (int i = 0; i < bTemp1.size(); i++) {
+			Pixel tmp = this.Point2Pixel(bTemp1.get(i).x(), bTemp1.get(i).y());
+			bList1.get(i).setX(tmp.getX());
+			bList1.get(i).setY(tmp.getY());
+		}
+		
+		for (int i = 0; i < bTemp2.size(); i++) {
+			Pixel tmp = this.Point2Pixel(bTemp2.get(i).x(), bTemp2.get(i).y());
+			bList2.get(i).setX(tmp.getX());
+			bList2.get(i).setY(tmp.getY());
+		}
+		
+		for (int i = 0; i < bTemp3.size(); i++) {
+			Pixel tmp = this.Point2Pixel(bTemp3.get(i).x(), bTemp3.get(i).y());
+			bList3.get(i).setX(tmp.getX());
+			bList3.get(i).setY(tmp.getY());
+		}
+		
+		for (int i = 0; i < bTemp4.size(); i++) {
+			Pixel tmp = this.Point2Pixel(bTemp4.get(i).x(), bTemp4.get(i).y());
+			bList4.get(i).setX(tmp.getX());
+			bList4.get(i).setY(tmp.getY());
+		}
+		
 	}
 	
 	public Image getImage() {
@@ -190,19 +247,5 @@ public class Map {
 	public void setImage_height(int image_height) {
 		this.image_height = image_height;
 	}
-
-	/*
-	 * Example.
-	 */
-//	public static void main(String[] args) throws IOException {
-//
-//		Map m = new Map();
-//		Pixel p;
-//		Point3D p2 = new Point3D(35.20746107, 32.10248386);
-//		System.out.println(p2.toString());
-//		
-//		p = m.Point2Pixel(p2.x(), p2.y());
-//		System.out.println(p.toString());
-//	}
 	
 }

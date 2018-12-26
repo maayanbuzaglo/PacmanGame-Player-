@@ -47,6 +47,15 @@ public class Pixel {
 		return true;
 	}
 	
+	/*
+	 * This function calculate the distance between 2 pixels.
+	 */
+	public double distance(Pixel p) {
+		
+		double ans = Math.pow(this.getX() - p.getX(), 2) + Math.pow(this.getY() - p.getY(), 2);
+		return Math.sqrt(ans);
+	}
+	
 	@Override
 	public String toString() {
 		return "Pixel [X = " + x +

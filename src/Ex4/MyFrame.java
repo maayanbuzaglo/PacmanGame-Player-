@@ -26,11 +26,14 @@ import javax.swing.JFrame;
 import Geom.Point3D;
 import Pacman_game.Fruit;
 import Pacman_game.Game;
+import Pacman_game.Ghost;
 import Pacman_game.Line;
 import Pacman_game.Map;
 import Pacman_game.Pacman;
 import Pacman_game.Pixel;
-import Pacman_game.ShortestPathAlgo;
+import Pacman_game.Player;
+import Robot.Play;
+import javafx.scene.shape.Box;
 
 /*
  * This class represents the game frame.
@@ -39,18 +42,27 @@ public class MyFrame extends JFrame implements MouseListener {
 
 	public Map m;
 	public BufferedImage background; //game background image.
+	public BufferedImage ghostImage; //ghost icon.
+	public BufferedImage playerImage; //player icon.
 	public BufferedImage pacmanImage; //pacman icon.
 	public BufferedImage fruitImage; //fruit icon.
-	public ArrayList<Line> lList; //list of lines.
+	public ArrayList<Ghost> gList; //list of Ghost.
 	public ArrayList<Pacman> pList; //list of pacmans.
 	public ArrayList<Fruit> fList; //list of fruits.
-	public ArrayList<Pixel> linePixel; //lines pixels list for point 1.
-	public ArrayList<Pixel> linePixel2; //lines pixels list for point 2.
+	public ArrayList<Pacman_game.Box> bList; //list of boxes.
+	public ArrayList<Pixel> boxPixel1; //boxes pixels list for point 1.
+	public ArrayList<Pixel> boxPixel2; //boxes pixels list for point 2.
+	public ArrayList<Pixel> boxPixel3; //boxes pixels list for point 3.
+	public ArrayList<Pixel> boxPixel4; //boxes pixels list for point 4.
+	public ArrayList<Pixel> ghostPixel; //ghost pixels list.
+	public Pixel playerPixel; //player pixel.
 	public ArrayList<Pixel> pacmanPixel; //pacmans pixels list.
 	public ArrayList<Pixel> fruitPixel; //fruits pixel list.
+	public Player player;
 	public int countPacman; //pacman id.
 	public int countFruit; //fruit id.
-	private boolean WhoAreYOU; //if true - draws pacman. else - draws fruit.
+	public String file;
+	private boolean Player; //if true - draws player. else - selects direction.
 
 	/*
 	 * An empty constructor.
@@ -58,14 +70,18 @@ public class MyFrame extends JFrame implements MouseListener {
 	public MyFrame() throws IOException {
 
 		m = new Map();
-		lList = new ArrayList<Line>();
+		player = new Player();
+		gList = new ArrayList<Ghost>();
 		pList = new ArrayList<Pacman>();
 		fList = new ArrayList<Fruit>();
+		bList = new ArrayList<Pacman_game.Box>();
+		playerPixel = new Pixel();
+		ghostPixel = new ArrayList<Pixel>();
 		pacmanPixel = new ArrayList<Pixel>();
 		fruitPixel = new ArrayList<Pixel>();
 		countPacman = 0;
 		countFruit = 0;
-		WhoAreYOU = true;
+		Player = false;
 
 		initGUI();		
 		this.addMouseListener(this);
@@ -77,11 +93,15 @@ public class MyFrame extends JFrame implements MouseListener {
 	public MyFrame(Game game) throws IOException {
 
 		m = new Map();
+		player = this.player;
+		gList = game.Ghost_list;
 		pList =  game.Pacman_list;
 		fList = game.Fruit_list;
+		playerPixel = new Pixel();
+		ghostPixel = new ArrayList<Pixel>();
 		pacmanPixel = new ArrayList<Pixel>();
 		fruitPixel = new ArrayList<Pixel>();
-		WhoAreYOU = true; //draws pacmans.
+		Player = false;
 
 		repaint();
 		initGUI();		
@@ -94,141 +114,21 @@ public class MyFrame extends JFrame implements MouseListener {
 	private void initGUI() {
 
 		MenuBar menuBar = new MenuBar();
-		Menu icons = new Menu("Type"); //Icons - Pacman, Fruit.
-		MenuItem pacman = new MenuItem("Player");
-		MenuItem fruit = new MenuItem("Fruit");
-
-		Menu data = new Menu("Data"); //Data - Speed, Radius, Weight.
-		MenuItem speed = new MenuItem("Speed (pacman)");
-		MenuItem radius = new MenuItem("Radius (pacman)");
-		MenuItem weight = new MenuItem("Weight (fruit)");
+		Menu game = new Menu("Game"); //Icons - Pacman, Fruit.
+		MenuItem readCSV = new MenuItem("Read game");
+		MenuItem run = new MenuItem("Run");
 
 		Menu options = new Menu("Options"); //Options - Run, Create kml file, Read game, Save game, Clear.
-		MenuItem run = new MenuItem("Run");
-		MenuItem createKML = new MenuItem("Create kml file");
-		MenuItem readCSV = new MenuItem("Read game");
-		MenuItem exportCSV = new MenuItem("Save game");
 		MenuItem clear = new MenuItem("Clear");
 
-		menuBar.add(icons);
-		icons.add(pacman);
-		icons.add(fruit);
-
-		menuBar.add(data);
-		data.add(speed);
-		data.add(radius);
-		data.add(weight);
+		menuBar.add(game);
+		game.add(readCSV);
+		game.add(run);
 
 		menuBar.add(options);
-		options.add(run);
-		options.add(createKML);
-		options.add(readCSV);
-		options.add(exportCSV);
 		options.add(clear);
 
 		this.setMenuBar(menuBar);
-
-		//listens to pacman key.
-		pacman.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				WhoAreYOU = true;
-			}
-		});
-
-		//listens to fruit key.
-		fruit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				WhoAreYOU = false;
-			}
-		});
-
-		//listens to clear key.
-		clear.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				pList.clear();
-				fList.clear();
-				lList.clear();
-				pacmanPixel.clear();
-				fruitPixel.clear();
-				linePixel.clear();
-				countPacman = 0;
-				countFruit = 0;
-				repaint();
-			}
-		});
-
-		//listens to speed key.
-		speed.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(WhoAreYOU) {
-					System.out.print("Enter pacman speed: ");
-					Scanner sc = new Scanner(System.in);
-					double speed = sc.nextDouble();
-					pList.get(pList.size() - 1).setSpeed(speed); //gets the last pacman and changes its speed.
-				}
-			}
-		});
-
-		//listens to radius key.
-		radius.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(WhoAreYOU) {
-					System.out.print("Enter pacman radius: ");
-					Scanner sc = new Scanner(System.in);
-					double radius = sc.nextDouble();
-					pList.get(pList.size()-1).setRadius(radius); //gets the last pacman and changes its radius.
-				}
-			}
-		});
-
-		//listens to weight key.
-		weight.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(!WhoAreYOU) {
-					System.out.print("Enter fruit weight: ");
-					Scanner sc = new Scanner(System.in);
-					int weight = sc.nextInt();
-					fList.get(fList.size()-1).setWeight(weight); //gets the last fruit and changes its weight.
-				}	
-			}
-		});
-
-		//listens to run key.
-		run.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				ShortestPathAlgo shortPath = new ShortestPathAlgo();
-				Game g = new Game(pList, fList , lList);
-				try {
-					shortPath.closestFruit(g);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-				ThreadPacks P = new ThreadPacks(); //NEW
-				P.start(); //NEW
-				repaint();
-			}
-		});
-
-		//listens to create kml file key.
-		createKML.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Game g = new Game(pList, fList ,lList);
-				try {
-					g.createKML(g, "C:\\Users\\nahama\\eclipse-workspace\\OopNavigtion\\data\\myGame.kml");
-				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
 
 		//listens to read game key.
 		readCSV.addActionListener(new ActionListener() {
@@ -239,10 +139,13 @@ public class MyFrame extends JFrame implements MouseListener {
 				//clears all before read a new game.
 				pList.clear();
 				fList.clear();
-				lList.clear();
+				bList.clear();
 				pacmanPixel.clear();
 				fruitPixel.clear();
-				linePixel.clear();
+				boxPixel1.clear();
+				boxPixel2.clear();
+				boxPixel3.clear();
+				boxPixel4.clear();
 				String place = "";
 				JButton open = new JButton();
 				JFileChooser fc = new JFileChooser();
@@ -251,7 +154,9 @@ public class MyFrame extends JFrame implements MouseListener {
 				if(fc.showOpenDialog(open) == JFileChooser.APPROVE_OPTION) {
 					place = fc.getSelectedFile().getAbsolutePath();
 				}
+				file = place;
 				g.readCsv(place);
+
 				//adds all the pacmans in the game to pacman list in this game.
 				for(Pacman it: g.Pacman_list) {
 					pList.add(it);
@@ -259,32 +164,110 @@ public class MyFrame extends JFrame implements MouseListener {
 					Pixel p = new Pixel(m.Point2Pixel(it.getLocation().x(),it.getLocation().y()));
 					pacmanPixel.add(p);
 				}
-				//adds all the fruits in the game to pacman list in this game.
+
+				//adds all the fruits in the game to fruit list in this game.
 				for(Fruit it: g.Fruit_list) {
 					fList.add(it);
 
 					Pixel f = new Pixel(m.Point2Pixel(it.getLocation().x(), it.getLocation().y()));
 					fruitPixel.add(f);
 				}
-				repaint();
 
+				//adds all the ghosts in the game to ghost list in this game.
+				for(Ghost it: g.Ghost_list) {
+					gList.add(it);
+
+					Pixel gh = new Pixel(m.Point2Pixel(it.getLocation().x(),it.getLocation().y()));
+					ghostPixel.add(gh);
+				}
+
+				//adds all the boxes in the game to ghost list in this game.
+				for(Pacman_game.Box it: g.Box_list) {
+					bList.add(it);
+
+					Pixel b1 = new Pixel(m.Point2Pixel(it.getLocationStart().x(),it.getLocationStart().y()));
+					boxPixel1.add(b1);
+					Pixel b2 = new Pixel(m.Point2Pixel(it.getLocationStart().x(),it.getLocationEnd().y()));
+					boxPixel1.add(b2);
+					Pixel b3 = new Pixel(m.Point2Pixel(it.getLocationEnd().x(),it.getLocationEnd().y()));
+					boxPixel1.add(b3);
+					Pixel b4 = new Pixel(m.Point2Pixel(it.getLocationEnd().x(),it.getLocationEnd().y()));
+					boxPixel1.add(b4);
+				}
+
+				Player = true;
+				repaint();
 			}
 		});
 
-		//listens to save game key.
-		exportCSV.addActionListener(new ActionListener() {
+		//listens to run key.
+		run.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Game g = new Game(pList, fList, lList);
-				g.createCSV(g);
+
+				Player = false;
+				Play play = new Play(file);
+				play.setIDs(314882077, 322093311);
+
+				String map_data = play.getBoundingBox();
+				System.out.println("Bounding Box info: " + map_data);
+
+				ArrayList<String> board_data = play.getBoard();
+				for(int i = 0; i < board_data.size(); i++) {
+					System.out.println(board_data.get(i));
+				}
+
+				System.out.println();
+				System.out.println("Init Player Location should be set using the bounding box info");
+
+				play.setInitLocation(player.getLocation().x(), player.getLocation().y());
+
+				play.start();
+
+				repaint();
 			}
 		});
+
+		//listens to clear key.
+		clear.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pList.clear();
+				fList.clear();
+				bList.clear();
+				pacmanPixel.clear();
+				fruitPixel.clear();
+				boxPixel1.clear();
+				boxPixel2.clear();
+				boxPixel3.clear();
+				boxPixel4.clear();
+
+				countPacman = 0;
+				countFruit = 0;
+				repaint();
+			}
+		});
+
+		//gets the box image.
+		try {
+			ghostImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\pictures\\ghost.png"));
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//gets the player image.
+		try {
+			playerImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\pictures\\player.png"));
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		//gets the pacman image.
 		try {
 			pacmanImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\pictures\\pacman.png"));
 		}
-
 		catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -311,11 +294,18 @@ public class MyFrame extends JFrame implements MouseListener {
 		Pixel pFram = new Pixel(this.getWidth(), this.getHeight());
 		pacmanPixel = new ArrayList<Pixel>();
 		fruitPixel = new ArrayList<Pixel>();
-		linePixel = new ArrayList<Pixel>();
-		linePixel2 = new ArrayList<Pixel>();
+		ghostPixel = new ArrayList<Pixel>();
+		boxPixel1 = new ArrayList<Pixel>();
+		boxPixel2 = new ArrayList<Pixel>();
+		boxPixel3 = new ArrayList<Pixel>();
+		boxPixel4 = new ArrayList<Pixel>();
 
-		m.changeFrame(pFram, pacmanPixel, fruitPixel, linePixel); //upload the game pixels if change the frame size.
+		//upload the game pixels if change the frame size.
+		m.changeFrame(pFram, playerPixel, pacmanPixel, fruitPixel, ghostPixel, boxPixel1, boxPixel2, boxPixel3, boxPixel4);
 
+		//changes points of player in game to pixels.
+		Pixel playtemp = m.Point2Pixel(player.getLocation().x(), player.getLocation().y());
+		playerPixel = new Pixel(playtemp);
 
 		//changes points of pacmans in game to pixels.
 		for (int i = 0; i < pList.size(); i++) {
@@ -329,21 +319,50 @@ public class MyFrame extends JFrame implements MouseListener {
 			fruitPixel.add(pix);
 		}
 
+		//changes points of ghost in game to pixels. 
+		for (int i = 0; i < gList.size(); i++) {
+			Pixel pix = m.Point2Pixel(gList.get(i).getLocation().x(), gList.get(i).getLocation().y());
+			ghostPixel.add(pix);
+		}
+
 		//changes points of lines in game to pixels (point 1).
-		for (int i = 0; i < lList.size(); i++) {
-			Pixel pix = m.Point2Pixel(lList.get(i).getPoint1().x(), lList.get(i).getPoint1().y());
-			linePixel.add(pix);
+		for (int i = 0; i < bList.size(); i++) {
+			Pixel pix1 = m.Point2Pixel(bList.get(i).getLocationStart().x(), bList.get(i).getLocationStart().y());
+			boxPixel1.add(pix1);
+			Pixel pix2 = m.Point2Pixel(bList.get(i).getLocationStart().x(), bList.get(i).getLocationEnd().y());
+			boxPixel2.add(pix2);
+			Pixel pix3 = m.Point2Pixel(bList.get(i).getLocationEnd().x(), bList.get(i).getLocationEnd().y());
+			boxPixel3.add(pix3);
+			Pixel pix4 = m.Point2Pixel(bList.get(i).getLocationEnd().x(), bList.get(i).getLocationStart().y());
+			boxPixel4.add(pix4);
+		}
+
+		//draws all the boxes on the list.
+		for (int i = 0; i < boxPixel1.size(); i++) {
+			double height = boxPixel2.get(i).distance(boxPixel1.get(i));
+			double width = boxPixel4.get(i).distance(boxPixel1.get(i));
+//			g.drawRect((int)boxPixel1.get(i).getX(), (int)boxPixel3.get(i).getY(), (int)width, (int)height);
+			g.fillRect((int)boxPixel1.get(i).getX(), (int)boxPixel3.get(i).getY(), (int)width, (int)height);
 		}
 
 		//draws all the fruits on the list.
 		for (int i = 0; i < fruitPixel.size(); i++) {
 			g.drawImage(fruitImage, (int)fruitPixel.get(i).getX(), (int)fruitPixel.get(i).getY(), 40, 30, this);
 		}
-		
+
 		//draws all the pacmans on the list.
 		for (int i = 0; i < pacmanPixel.size(); i++) {
 			g.drawImage(pacmanImage, (int)pacmanPixel.get(i).getX(), (int)pacmanPixel.get(i).getY(), 30, 30, this);
 		}
+
+		//draws the player. 
+		g.drawImage(playerImage, (int)playerPixel.getX(), (int)playerPixel.getY(), 60, 40, this);
+
+		//draws all the ghost on the list. 
+		for (int i = 0; i < ghostPixel.size(); i++) {
+			g.drawImage(ghostImage, (int)ghostPixel.get(i).getX(), (int)ghostPixel.get(i).getY(), 60, 40, this);
+		}
+
 	}
 
 	/*
@@ -356,19 +375,9 @@ public class MyFrame extends JFrame implements MouseListener {
 		x = arg.getX();
 		y = arg.getY();
 		Pixel p = new Pixel(x, y);
-		if(WhoAreYOU) { //draws pacmans where mouse clicked.
-			pacmanPixel.add(p);
-			Point3D point = m.Pixel2Point(p);
-			countPacman++; //+1 to pacman id.
-			Pacman pac = new Pacman(point, countPacman, 1, 1); 
-			pList.add(pac);
-		}
-		else { //draws fruits where mouse clicked.
-			fruitPixel.add(p);
-			Point3D point = m.Pixel2Point(p);
-			countFruit++; //+1 to fruit id.
-			Fruit fru = new Fruit(point, countFruit, 0);
-			fList.add(fru);
+		if(Player) { //draws pacmans where mouse clicked.
+			this.playerPixel = new Pixel(p);
+			System.out.println(playerPixel);
 		}
 		repaint();		
 	}
@@ -393,7 +402,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 	}
 
-	
+
 	public  class ThreadPacks extends Thread
 	{
 		/**
