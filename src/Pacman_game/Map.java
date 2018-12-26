@@ -108,7 +108,7 @@ public class Map {
 	/*
 	 * This function updates the frame.
 	 */
-	public void changeFrame(Pixel p, Pixel player, ArrayList<Pixel> pList, ArrayList<Pixel> fList, ArrayList<Pixel> gList,
+	public Pixel changeFrame(Pixel p, Pixel player, ArrayList<Pixel> pList, ArrayList<Pixel> fList, ArrayList<Pixel> gList,
 			                ArrayList<Pixel> bList1, ArrayList<Pixel> bList2, ArrayList<Pixel> bList3, 
 			                ArrayList<Pixel> bList4) { 
 
@@ -119,9 +119,12 @@ public class Map {
 		ArrayList<Point3D> bTemp2 = new ArrayList<Point3D>();
 		ArrayList<Point3D> bTemp3 = new ArrayList<Point3D>();
 		ArrayList<Point3D> bTemp4 = new ArrayList<Point3D>();
-
-		Point3D mTemp = new Point3D(this.Pixel2Point(new Pixel(player.getX(), player.getY())));
-
+		Point3D mTemp = null;
+		
+		if (player != null) {
+		mTemp = new Point3D(this.Pixel2Point(new Pixel(player.getX(), player.getY())));
+		}
+		
 		for (int i = 0; i < pList.size(); i++) {
 			Pixel tmp = new Pixel(pList.get(i).getX(), pList.get(i).getY());
 			pTemp.add(this.Pixel2Point(tmp));
@@ -160,9 +163,11 @@ public class Map {
 		this.setImage_weight((int)p.getX());
 		this.setImage_height((int)p.getY());
 
+		if (player != null) {
 		Pixel mtmp = this.Point2Pixel(mTemp.x(), mTemp.y());
 		player.setX(mtmp.getX());
 		player.setY(mtmp.getY());
+		}
 
 		for (int i = 0; i < pTemp.size(); i++) {
 			Pixel tmp = this.Point2Pixel(pTemp.get(i).x(), pTemp.get(i).y());
@@ -205,6 +210,8 @@ public class Map {
 			bList4.get(i).setX(tmp.getX());
 			bList4.get(i).setY(tmp.getY());
 		}
+		
+		return player;
 		
 	}
 	

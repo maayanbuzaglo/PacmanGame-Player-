@@ -119,6 +119,7 @@ public class MyFrame extends JFrame implements MouseListener {
 		MenuItem run = new MenuItem("Run");
 
 		Menu options = new Menu("Options"); //Options - Run, Create kml file, Read game, Save game, Clear.
+		MenuItem play = new MenuItem("Player");
 		MenuItem clear = new MenuItem("Clear");
 
 		menuBar.add(game);
@@ -127,6 +128,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		menuBar.add(options);
 		options.add(clear);
+		options.add(play);
 
 		this.setMenuBar(menuBar);
 
@@ -201,6 +203,16 @@ public class MyFrame extends JFrame implements MouseListener {
 		});
 
 		//listens to run key.
+		play.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				Player = true;
+				repaint();
+			}
+		});
+		
+		//listens to run key.
 		run.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -232,11 +244,16 @@ public class MyFrame extends JFrame implements MouseListener {
 		clear.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				player = null;
 				pList.clear();
 				fList.clear();
+				gList.clear();
 				bList.clear();
+				playerPixel = null;
 				pacmanPixel.clear();
 				fruitPixel.clear();
+				ghostPixel.clear();
 				boxPixel1.clear();
 				boxPixel2.clear();
 				boxPixel3.clear();
@@ -301,11 +318,13 @@ public class MyFrame extends JFrame implements MouseListener {
 		boxPixel4 = new ArrayList<Pixel>();
 
 		//upload the game pixels if change the frame size.
-		m.changeFrame(pFram, playerPixel, pacmanPixel, fruitPixel, ghostPixel, boxPixel1, boxPixel2, boxPixel3, boxPixel4);
-
-		//changes points of player in game to pixels.
-		Pixel playtemp = m.Point2Pixel(player.getLocation().x(), player.getLocation().y());
-		playerPixel = new Pixel(playtemp);
+		if (playerPixel != null) {
+		playerPixel = m.changeFrame(pFram, playerPixel, pacmanPixel, fruitPixel, ghostPixel, boxPixel1, boxPixel2, boxPixel3, boxPixel4);
+		}
+		
+//		//changes points of player in game to pixels.
+//		Pixel playtemp = m.Point2Pixel(player.getLocation().x(), player.getLocation().y());
+//		playerPixel = new Pixel(playtemp);
 
 		//changes points of pacmans in game to pixels.
 		for (int i = 0; i < pList.size(); i++) {
@@ -341,7 +360,6 @@ public class MyFrame extends JFrame implements MouseListener {
 		for (int i = 0; i < boxPixel1.size(); i++) {
 			double height = boxPixel2.get(i).distance(boxPixel1.get(i));
 			double width = boxPixel4.get(i).distance(boxPixel1.get(i));
-//			g.drawRect((int)boxPixel1.get(i).getX(), (int)boxPixel3.get(i).getY(), (int)width, (int)height);
 			g.fillRect((int)boxPixel1.get(i).getX(), (int)boxPixel3.get(i).getY(), (int)width, (int)height);
 		}
 
@@ -356,8 +374,10 @@ public class MyFrame extends JFrame implements MouseListener {
 		}
 
 		//draws the player. 
+		if (playerPixel != null) {
 		g.drawImage(playerImage, (int)playerPixel.getX(), (int)playerPixel.getY(), 60, 40, this);
-
+		}
+		
 		//draws all the ghost on the list. 
 		for (int i = 0; i < ghostPixel.size(); i++) {
 			g.drawImage(ghostImage, (int)ghostPixel.get(i).getX(), (int)ghostPixel.get(i).getY(), 60, 40, this);
