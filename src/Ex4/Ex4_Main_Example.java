@@ -40,7 +40,7 @@ public class Ex4_Main_Example {
 		System.out.println("Init Player Location should be set using the bounding box info");
 		
 		// 5) Set the "player" init location - should be a valid location
-		play1.setInitLocation(32.1040,35.2061);
+		play1.setInitLocation(32.1040, 35.2061);
 		
 		// 6) Start the "server"
 		play1.start(); // default max time is 100 seconds (1000*100 ms).
