@@ -318,13 +318,7 @@ public class MyFrame extends JFrame implements MouseListener {
 		boxPixel4 = new ArrayList<Pixel>();
 
 		//upload the game pixels if change the frame size.
-		if (playerPixel != null) {
 		playerPixel = m.changeFrame(pFram, playerPixel, pacmanPixel, fruitPixel, ghostPixel, boxPixel1, boxPixel2, boxPixel3, boxPixel4);
-		}
-		
-//		//changes points of player in game to pixels.
-//		Pixel playtemp = m.Point2Pixel(player.getLocation().x(), player.getLocation().y());
-//		playerPixel = new Pixel(playtemp);
 
 		//changes points of pacmans in game to pixels.
 		for (int i = 0; i < pList.size(); i++) {
