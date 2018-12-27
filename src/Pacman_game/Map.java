@@ -60,7 +60,7 @@ public class Map {
 	public Pixel Point2Pixel(double longitude, double latitude) {
 		
 		Pixel pix = Pixel2Point2(image_weight, image_height);
-		Point3D gps = new Point3D (longitude,latitude);
+		Point3D gps = new Point3D (longitude, latitude);
 		gps.change_Geometric_To_Cart();
 		double x = gps.x() - pStart.x();
 		double y = gps.y() - pStart.y();
