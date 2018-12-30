@@ -38,16 +38,16 @@ public class MyFrame extends JFrame implements MouseListener {
 	public BufferedImage playerImage; //player icon.
 	public BufferedImage pacmanImage; //pacman icon.
 	public BufferedImage fruitImage; //fruit icon.
-	public ArrayList<Robot.Packman> gList; //list of Ghost.
+	public ArrayList<Robot.Packman> gList; //list of ghosts.
 	public ArrayList<Robot.Packman> pList; //list of pacmans.
 	public ArrayList<Robot.Fruit> fList; //list of fruits.
 	public ArrayList<GeoBox> bList; //list of boxes.
+	public Pixel playerPixel; //player pixel.
 	public ArrayList<Pixel> boxPixel1; //boxes pixels list for point 1.
 	public ArrayList<Pixel> boxPixel2; //boxes pixels list for point 2.
 	public ArrayList<Pixel> boxPixel3; //boxes pixels list for point 3.
 	public ArrayList<Pixel> boxPixel4; //boxes pixels list for point 4.
 	public ArrayList<Pixel> ghostPixel; //ghost pixels list.
-	public Pixel playerPixel; //player pixel.
 	public ArrayList<Pixel> pacmanPixel; //pacmans pixels list.
 	public ArrayList<Pixel> fruitPixel; //fruits pixel list.
 	public Robot.Packman player;
@@ -257,7 +257,7 @@ public class MyFrame extends JFrame implements MouseListener {
 						play.start(); //default max time is 100 seconds (1000*100 ms).
 
 						//plays as long as there are "fruits" and time.
-						int i=0;
+						int i = 0;
 						while(play.isRuning()) {
 							i++;
 							//This is the main command to the player (on the server side).
