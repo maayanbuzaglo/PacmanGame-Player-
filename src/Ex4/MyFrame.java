@@ -110,11 +110,11 @@ public class MyFrame extends JFrame implements MouseListener {
 	private void initGUI() {
 
 		MenuBar menuBar = new MenuBar();
-		Menu game = new Menu("Game"); //Icons - Pacman, Fruit.
+		Menu game = new Menu("Game"); //Game - Read game, Run.
 		MenuItem readCSV = new MenuItem("Read game");
 		MenuItem run = new MenuItem("Run");
 
-		Menu options = new Menu("Options"); //Options - Run, Create kml file, Read game, Save game, Clear.
+		Menu options = new Menu("Options"); //Options - Player, Clear.
 		MenuItem me = new MenuItem("Player");
 		MenuItem clear = new MenuItem("Clear");
 
@@ -222,7 +222,7 @@ public class MyFrame extends JFrame implements MouseListener {
 			}
 		});
 
-		//listens to run key.
+		//listens to player key.
 		me.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -251,28 +251,28 @@ public class MyFrame extends JFrame implements MouseListener {
 
 				play.setInitLocation(player.getLocation().x() , player.getLocation().y());
 				
-				// 6) Start the "server"
-				play.start(); // default max time is 100 seconds (1000*100 ms).
+				//starts the "server".
+				play.start(); //default max time is 100 seconds (1000*100 ms).
 				
-				// 7) "Play" as long as there are "fruits" and time
-			//	for(int i=0;i<10;i++) {
+				//plays as long as there are "fruits" and time.
 				int i=0;
 					while(play.isRuning()) {
 						i++;
-				// 7.1) this is the main command to the player (on the server side)
+				//This is the main command to the player (on the server side).
 					play.rotate(36*i); 
 					System.out.println("***** "+i+"******");
 					
-				// 7.2) get the current score of the game
+				//getS the current score of the game.
 					String info = play.getStatistics();
 					System.out.println(info);
-				// 7.3) get the game-board current state
+					
+				//getS the game-board current state.
 					board_data = play.getBoard();
-					for(int a=0;a<board_data.size();a++) {
+					for(int a = 0; a < board_data.size(); a++) {
 						System.out.println(board_data.get(a));
 					}
 					
-					//clears all before read a new game.
+					//clears all before read a new game (except the boxes).
 					pList.clear();
 					fList.clear();
 					gList.clear();
@@ -322,11 +322,11 @@ public class MyFrame extends JFrame implements MouseListener {
 					
 					System.out.println();
 				}
-				// 8) stop the server - not needed in the real implementation.
+				//stops the server - not needed in the real implementation.
 				//play1.stop();
 				System.out.println("**** Done Game (user stop) ****");
 				
-				// 9) print the data & save to the course DB
+				//prints the data & save to the course DB.
 				String info = play.getStatistics();
 				System.out.println(info);
 				PlayerOn = true;
@@ -358,7 +358,7 @@ public class MyFrame extends JFrame implements MouseListener {
 			}
 		});
 
-		//gets the box image.
+		//gets the ghost image.
 		try {
 			ghostImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\pictures\\ghost.png"));
 		}
@@ -395,7 +395,7 @@ public class MyFrame extends JFrame implements MouseListener {
 	int y = -1;
 
 	/*
-	 * This function paints pacmans, fruits, ghosts  on the game frame.
+	 * This function paints pacmans, fruits, ghosts and boxes on the game frame.
 	 * @see java.awt.Window#paint(java.awt.Graphics).
 	 */
 	public void paint(Graphics g) {
@@ -410,7 +410,7 @@ public class MyFrame extends JFrame implements MouseListener {
 		boxPixel3 = new ArrayList<Pixel>();
 		boxPixel4 = new ArrayList<Pixel>();
 
-		//upload the game pixels if change the frame size.
+		//uploads the game pixels if change the frame size.
 		playerPixel = m.changeFrame(pFram, playerPixel, pacmanPixel, fruitPixel, ghostPixel, boxPixel1, boxPixel2, boxPixel3, boxPixel4);
 
 		//changes points of pacmans in game to pixels.
@@ -431,7 +431,7 @@ public class MyFrame extends JFrame implements MouseListener {
 			ghostPixel.add(pix);
 		}
 
-		//changes points of boxes in game to pixels (point 1).
+		//changes points of boxes in game to pixels.
 		for (int i = 0; i < bList.size(); i++) {
 			Pixel pix1 = m.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMin().x());
 			boxPixel1.add(pix1);
