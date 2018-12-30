@@ -59,7 +59,7 @@ public class Coords implements coords_converter {
 				Math.sin(Math.toRadians(gps1.x()))) +
 				(Math.cos(Math.toRadians(gps0.x())) * Math.cos(Math.toRadians(gps1.x())) *
 						Math.cos(Math.toRadians(gps0.y() - gps1.y() )));
-		return new Double(((Math.toDegrees(Math.acos(theDistance))) * 69.09)* 1.60934) * 1000;
+		return (((Math.toDegrees(Math.acos(theDistance))) * 69.09)* 1.60934) * 1000;
 	}
 
 	/*

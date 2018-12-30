@@ -54,6 +54,7 @@ public class MyFrame extends JFrame implements MouseListener {
 	public int countPacman; //pacman id.
 	public int countFruit; //fruit id.
 	public String file;
+	public double azi;
 	private boolean PlayerOn = false; //if true - draws player. else - nothing.
 	private boolean ReadGameOn = false; //if true - draws player. else - need to read game.
 
@@ -75,6 +76,7 @@ public class MyFrame extends JFrame implements MouseListener {
 		fruitPixel = new ArrayList<Pixel>();
 		countPacman = 0;
 		countFruit = 0;
+		azi = 0;
 		PlayerOn = false;
 		play = new Play() ; 
 		initGUI();		
@@ -96,6 +98,7 @@ public class MyFrame extends JFrame implements MouseListener {
 		pacmanPixel = new ArrayList<Pixel>();
 		fruitPixel = new ArrayList<Pixel>();
 		PlayerOn = false;
+		azi = 0;
 		for (int i = 0; i < g.sizeB(); i++) {
 			bList.add(g.getBox(i));
 		}
@@ -117,6 +120,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		Menu options = new Menu("Options"); //Options - Clear.
 		MenuItem clear = new MenuItem("Clear");
+		MenuItem stop = new MenuItem("Stop");
 
 		menuBar.add(game);
 		game.add(readCSV);
@@ -124,6 +128,8 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		menuBar.add(options);
 		options.add(clear);
+		options.add(stop);
+
 
 		this.setMenuBar(menuBar);
 
@@ -258,8 +264,8 @@ public class MyFrame extends JFrame implements MouseListener {
 						play.start(); //default max time is 100 seconds (1000*100 ms).
 
 						//plays as long as there are "fruits" and time.
-						ThreadT S = new ThreadT() ; 
-						S.start();
+//						ThreadT S = new ThreadT() ; 
+//						S.start();
 				
 						//stops the server - not needed in the real implementation.
 						//play1.stop();
@@ -280,6 +286,7 @@ public class MyFrame extends JFrame implements MouseListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
+				play.stop();
 				pList.clear();
 				fList.clear();
 				gList.clear();
@@ -293,18 +300,32 @@ public class MyFrame extends JFrame implements MouseListener {
 				boxPixel2.clear();
 				boxPixel3.clear();
 				boxPixel4.clear();
-
+				play.getBoard().clear();
+				
 				countPacman = 0;
 				countFruit = 0;
 				ReadGameOn = false;
 				PlayerOn = false;
+				System.out.println("----"+pacmanPixel.toString());
+				System.out.println("-------"+ pList.toString());
 				repaint();
 			}
 		});
+		
+		//listens to clear key.
+				stop.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+
+						play.stop();
+	
+						repaint();
+					}
+				});
 
 		//gets the ghost image.
 		try {
-			ghostImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\pictures\\ghost.png"));
+			ghostImage = ImageIO.read(new File("C:\\Users\\nahama\\eclipse-workspace\\PacmanGame\\pictures\\ghost.png"));
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -312,7 +333,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		//gets the player image.
 		try {
-			playerImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\pictures\\player.png"));
+			playerImage = ImageIO.read(new File("C:\\Users\\nahama\\eclipse-workspace\\PacmanGame\\pictures\\player.png"));
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -320,7 +341,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		//gets the pacman image.
 		try {
-			pacmanImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\pictures\\pacman.png"));
+			pacmanImage = ImageIO.read(new File("C:\\Users\\nahama\\eclipse-workspace\\PacmanGame\\pictures\\pacman.png"));
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -328,7 +349,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		//gets the fruit image.
 		try {
-			fruitImage = ImageIO.read(new File("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\pictures\\fruit.png"));
+			fruitImage = ImageIO.read(new File("C:\\Users\\nahama\\eclipse-workspace\\PacmanGame\\pictures\\fruit.png"));
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -413,6 +434,8 @@ public class MyFrame extends JFrame implements MouseListener {
 		for (int i = 0; i < ghostPixel.size(); i++) {
 			g.drawImage(ghostImage, (int)ghostPixel.get(i).getX(), (int)ghostPixel.get(i).getY(), 60, 40, this);
 		}
+		System.out.println("2----"+pacmanPixel.toString());
+		System.out.println("2-------"+ pList.toString());
 
 	}
 
@@ -433,6 +456,20 @@ public class MyFrame extends JFrame implements MouseListener {
 			System.out.println(point);
 			this.player = new Packman(point, 2);
 			System.out.println(point);
+		}
+		else {
+			Point3D po = m.Pixel2Point(p);
+			Point3D playerPoint = m.Pixel2Point(playerPixel);
+			azi = playerPoint.north_angle(po);
+			System.out.println("point: "+ po.toString());
+			System.out.println("playerPixel: "+ playerPoint.toString());
+			System.out.println("azi: "+ azi);
+			ThreadT S = new ThreadT() ; 
+			S.start();
+			
+
+
+			
 		}
 		repaint();		
 	}
@@ -467,7 +504,7 @@ public class MyFrame extends JFrame implements MouseListener {
 				i++;
 			
 				//This is the main command to the player (on the server side).
-				play.rotate(36*i); 
+				play.rotate(azi); 
 				System.out.println("***** Step " + i + " *****");
 
 				//getS the current score of the game.
@@ -476,9 +513,9 @@ public class MyFrame extends JFrame implements MouseListener {
 
 				//getS the game-board current state.
 				ArrayList<String> board_data = play.getBoard();
-				for(int a = 0; a   < board_data.size(); a++) {
-					System.out.println(board_data.get(a));
-				}
+//				for(int a = 0; a   < board_data.size(); a++) {
+//					System.out.println(board_data.get(a));
+//				}
 
 				//clears all before read a new game (except the boxes).
 				pList.clear();
