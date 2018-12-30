@@ -54,7 +54,8 @@ public class MyFrame extends JFrame implements MouseListener {
 	public int countPacman; //pacman id.
 	public int countFruit; //fruit id.
 	public String file;
-	private boolean PlayerOn; //if true - draws player. else - selects direction.
+	private boolean PlayerOn = false; //if true - draws player. else - nothing.
+	private boolean ReadGameOn = false; //if true - draws player. else - need to read game.
 
 	/*
 	 * An empty constructor.
@@ -114,8 +115,7 @@ public class MyFrame extends JFrame implements MouseListener {
 		MenuItem readCSV = new MenuItem("Read game");
 		MenuItem run = new MenuItem("Run");
 
-		Menu options = new Menu("Options"); //Options - Player, Clear.
-		MenuItem me = new MenuItem("Player");
+		Menu options = new Menu("Options"); //Options - Clear.
 		MenuItem clear = new MenuItem("Clear");
 
 		menuBar.add(game);
@@ -124,7 +124,6 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		menuBar.add(options);
 		options.add(clear);
-		options.add(me);
 
 		this.setMenuBar(menuBar);
 
@@ -137,6 +136,8 @@ public class MyFrame extends JFrame implements MouseListener {
 				pList.clear();
 				fList.clear();
 				bList.clear();
+				player = null;
+				playerPixel = null;
 				pacmanPixel.clear();
 				fruitPixel.clear();
 				boxPixel1.clear();
@@ -172,7 +173,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 						playerPixel = new Pixel(m.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
 					}
-					
+
 					//adds all the pacmans in the game to pacman list in this game.
 					if(board_data.get(i).charAt(0) == 'P') {
 						Robot.Packman pacman = new Robot.Packman(board_data.get(i));
@@ -217,16 +218,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 				}
 
-				PlayerOn = true;
-				repaint();
-			}
-		});
-
-		//listens to player key.
-		me.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
+				ReadGameOn = true;
 				PlayerOn = true;
 				repaint();
 			}
@@ -236,101 +228,111 @@ public class MyFrame extends JFrame implements MouseListener {
 		run.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				Play play = new Play(file);
 
-				play.setIDs(314882077, 322093311);
-
-				String map_data = play.getBoundingBox();
-				System.out.println("Bounding Box info: " + map_data);
-
-				ArrayList<String> board_data = play.getBoard();
-				for(int i = 0; i < board_data.size(); i++) {
-					System.out.println(board_data.get(i));
+				//if a game was not chosen.
+				if(ReadGameOn == false) {
+					System.out.println("You must choose a game.");
 				}
+				else {
+					Play play = new Play(file);
 
-				play.setInitLocation(player.getLocation().x() , player.getLocation().y());
-				
-				//starts the "server".
-				play.start(); //default max time is 100 seconds (1000*100 ms).
-				
-				//plays as long as there are "fruits" and time.
-				int i=0;
-					while(play.isRuning()) {
-						i++;
-				//This is the main command to the player (on the server side).
-					play.rotate(36*i); 
-					System.out.println("***** "+i+"******");
-					
-				//getS the current score of the game.
-					String info = play.getStatistics();
-					System.out.println(info);
-					
-				//getS the game-board current state.
-					board_data = play.getBoard();
-					for(int a = 0; a < board_data.size(); a++) {
-						System.out.println(board_data.get(a));
+					play.setIDs(314882077, 322093311);
+
+					String map_data = play.getBoundingBox();
+					System.out.println("Bounding Box info: " + map_data);
+
+					ArrayList<String> board_data = play.getBoard();
+					for(int i = 0; i < board_data.size(); i++) {
+						System.out.println(board_data.get(i));
 					}
-					
-					//clears all before read a new game (except the boxes).
-					pList.clear();
-					fList.clear();
-					gList.clear();
-					playerPixel = null;
-					pacmanPixel.clear();
-					fruitPixel.clear();
-					ghostPixel.clear();
 
-					for(int i1 = 0; i1 < board_data.size(); i1++) {
-
-						//updates the player data.
-						if(board_data.get(i1).charAt(0) == 'M') {
-							Robot.Packman player = new Robot.Packman(board_data.get(i1));
-
-							playerPixel = new Pixel(m.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
-						}
-						
-						//adds all the pacmans in the game to pacman list in this game.
-						else if(board_data.get(i1).charAt(0) == 'P') {
-							Robot.Packman pacman = new Robot.Packman(board_data.get(i1));
-							pList.add(pacman);
-
-							Pixel p = new Pixel(m.Point2Pixel(pacman.getLocation().y(), pacman.getLocation().x()));
-							pacmanPixel.add(p);
-						}
-
-						//adds all the fruits in the game to fruit list in this game.
-						else if(board_data.get(i1).charAt(0) == 'F') {
-							Robot.Fruit fruit = new Robot.Fruit(board_data.get(i1));
-							fList.add(fruit);
-
-							Pixel f = new Pixel(m.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
-							fruitPixel.add(f);
-						}
-
-						//adds all the ghosts in the game to ghost list in this game.
-						else if(board_data.get(i1).charAt(0) == 'G') {
-							Robot.Packman ghost = new Robot.Packman(board_data.get(i1));
-							gList.add(ghost);
-
-							Pixel g = new Pixel(m.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
-							ghostPixel.add(g);
-						}
+					//if a player was not chosen.
+					if(player == null) {
+						System.out.println("You must place the player.");
 					}
-					
-					repaint();
-					
-					System.out.println();
+					else {
+						play.setInitLocation(player.getLocation().x() , player.getLocation().y());
+
+						//starts the "server".
+						play.start(); //default max time is 100 seconds (1000*100 ms).
+
+						//plays as long as there are "fruits" and time.
+						int i=0;
+						while(play.isRuning()) {
+							i++;
+							//This is the main command to the player (on the server side).
+							play.rotate(36*i); 
+							System.out.println("***** "+i+"******");
+
+							//getS the current score of the game.
+							String info = play.getStatistics();
+							System.out.println(info);
+
+							//getS the game-board current state.
+							board_data = play.getBoard();
+							for(int a = 0; a < board_data.size(); a++) {
+								System.out.println(board_data.get(a));
+							}
+
+							//clears all before read a new game (except the boxes).
+							pList.clear();
+							fList.clear();
+							gList.clear();
+							player = null;
+							playerPixel = null;
+							pacmanPixel.clear();
+							fruitPixel.clear();
+							ghostPixel.clear();
+
+							for(int i1 = 0; i1 < board_data.size(); i1++) {
+
+								//updates the player data.
+								if(board_data.get(i1).charAt(0) == 'M') {
+									Robot.Packman player = new Robot.Packman(board_data.get(i1));
+
+									playerPixel = new Pixel(m.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
+								}
+
+								//adds all the pacmans in the game to pacman list in this game.
+								else if(board_data.get(i1).charAt(0) == 'P') {
+									Robot.Packman pacman = new Robot.Packman(board_data.get(i1));
+									pList.add(pacman);
+
+									Pixel p = new Pixel(m.Point2Pixel(pacman.getLocation().y(), pacman.getLocation().x()));
+									pacmanPixel.add(p);
+								}
+
+								//adds all the fruits in the game to fruit list in this game.
+								else if(board_data.get(i1).charAt(0) == 'F') {
+									Robot.Fruit fruit = new Robot.Fruit(board_data.get(i1));
+									fList.add(fruit);
+
+									Pixel f = new Pixel(m.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
+									fruitPixel.add(f);
+								}
+
+								//adds all the ghosts in the game to ghost list in this game.
+								else if(board_data.get(i1).charAt(0) == 'G') {
+									Robot.Packman ghost = new Robot.Packman(board_data.get(i1));
+									gList.add(ghost);
+
+									Pixel g = new Pixel(m.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
+									ghostPixel.add(g);
+								}
+							}
+						}
+
+						//stops the server - not needed in the real implementation.
+						//play1.stop();
+						System.out.println("**** Done Game (user stop) ****");
+
+						//prints the data & save to the course DB.
+						String info = play.getStatistics();
+						System.out.println(info);
+						repaint();
+						PlayerOn = false;
+					}
 				}
-				//stops the server - not needed in the real implementation.
-				//play1.stop();
-				System.out.println("**** Done Game (user stop) ****");
-				
-				//prints the data & save to the course DB.
-				String info = play.getStatistics();
-				System.out.println(info);
-				PlayerOn = true;
-				repaint();
 			}
 		});
 
@@ -343,6 +345,7 @@ public class MyFrame extends JFrame implements MouseListener {
 				fList.clear();
 				gList.clear();
 				bList.clear();
+				player = null;
 				playerPixel = null;
 				pacmanPixel.clear();
 				fruitPixel.clear();
@@ -354,6 +357,8 @@ public class MyFrame extends JFrame implements MouseListener {
 
 				countPacman = 0;
 				countFruit = 0;
+				ReadGameOn = false;
+				PlayerOn = false;
 				repaint();
 			}
 		});
