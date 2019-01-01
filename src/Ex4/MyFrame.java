@@ -11,14 +11,12 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
 import Coords.GeoBox;
 import Coords.LatLonAlt;
 import Geom.Point3D;
@@ -33,10 +31,12 @@ import Robot.Play;
  */
 public class MyFrame extends JFrame implements MouseListener {
 
-
-	Play play;
-	Robot.Game g;
-	public Map m;
+	public Map map;
+	public Play play;
+	public Robot.Game game; //a game.
+	public Robot.Packman player; //the player.
+	public String file; //game file.
+	public double azi; //the azimuth.
 	public BufferedImage background; //game background image.
 	public BufferedImage ghostImage; //ghost icon.
 	public BufferedImage playerImage; //player icon.
@@ -47,43 +47,45 @@ public class MyFrame extends JFrame implements MouseListener {
 	public ArrayList<Robot.Fruit> fList; //list of fruits.
 	public ArrayList<GeoBox> bList; //list of boxes.
 	public Pixel playerPixel; //player pixel.
+	public ArrayList<Pixel> ghostPixel; //ghosts pixels list.
+	public ArrayList<Pixel> pacmanPixel; //pacmans pixels list.
+	public ArrayList<Pixel> fruitPixel; //fruits pixel list.
 	public ArrayList<Pixel> boxPixel1; //boxes pixels list for point 1.
 	public ArrayList<Pixel> boxPixel2; //boxes pixels list for point 2.
 	public ArrayList<Pixel> boxPixel3; //boxes pixels list for point 3.
 	public ArrayList<Pixel> boxPixel4; //boxes pixels list for point 4.
-	public ArrayList<Pixel> ghostPixel; //ghost pixels list.
-	public ArrayList<Pixel> pacmanPixel; //pacmans pixels list.
-	public ArrayList<Pixel> fruitPixel; //fruits pixel list.
-	public Robot.Packman player;
 	public int countPacman; //pacman id.
 	public int countFruit; //fruit id.
-	public String file;
-	public double azi;
 	private boolean PlayerOn = false; //if true - draws player. else - nothing.
+	private boolean AzimuthOn = false;
 	private boolean ReadGameOn = false; //if true - draws player. else - need to read game.
-
 
 	/*
 	 * An empty constructor.
 	 */
 	public MyFrame() throws IOException {
 
-		m = new Map();
-		g = new Game();
+		map = new Map();
+		play = new Play() ; 
+		game = new Game();
 		player = null;
+		file = null;
+		azi = 0;
 		gList = new ArrayList<Robot.Packman>();
 		pList = new ArrayList<Robot.Packman>();
 		fList = new ArrayList<Robot.Fruit>();
 		bList = new ArrayList<GeoBox>();
-		playerPixel = new Pixel();
+		playerPixel = null;
 		ghostPixel = new ArrayList<Pixel>();
 		pacmanPixel = new ArrayList<Pixel>();
 		fruitPixel = new ArrayList<Pixel>();
+		boxPixel1 = new ArrayList<Pixel>();
+		boxPixel2 = new ArrayList<Pixel>();
+		boxPixel3 = new ArrayList<Pixel>();
+		boxPixel4 = new ArrayList<Pixel>();
 		countPacman = 0;
 		countFruit = 0;
-		azi = 0;
 		PlayerOn = false;
-		play = new Play() ; 
 		initGUI();		
 		this.addMouseListener(this);
 	}
@@ -93,19 +95,23 @@ public class MyFrame extends JFrame implements MouseListener {
 	 */
 	public MyFrame(Robot.Game game) throws IOException {
 
-		m = new Map();
-		player = g.getPlayer();
-		gList = g.getGhosts();
-		pList =  g.getRobots();
-		fList = g.getTargets();
+		map = new Map();
+		player = game.getPlayer();
+		gList = game.getGhosts();
+		pList =  game.getRobots();
+		fList = game.getTargets();
 		playerPixel = new Pixel();
 		ghostPixel = new ArrayList<Pixel>();
 		pacmanPixel = new ArrayList<Pixel>();
 		fruitPixel = new ArrayList<Pixel>();
+		boxPixel1 = new ArrayList<Pixel>();
+		boxPixel2 = new ArrayList<Pixel>();
+		boxPixel3 = new ArrayList<Pixel>();
+		boxPixel4 = new ArrayList<Pixel>();
 		PlayerOn = false;
-		azi = 0;
-		for (int i = 0; i < g.sizeB(); i++) {
-			bList.add(g.getBox(i));
+		//gets the boxes in the game.
+		for (int i = 0; i < game.sizeB(); i++) {
+			bList.add(game.getBox(i));
 		}
 
 		repaint();
@@ -118,26 +124,25 @@ public class MyFrame extends JFrame implements MouseListener {
 	 */
 	private void initGUI() {
 
-		MyPanel grafic = new MyPanel();
-		add(grafic);
+//		MyPanel grafic = new MyPanel();
+//		add(grafic);
 
 		MenuBar menuBar = new MenuBar();
 		Menu game = new Menu("Game"); //Game - Read game, Run.
 		MenuItem readCSV = new MenuItem("Read game");
 		MenuItem run = new MenuItem("Run");
 
-		Menu options = new Menu("Options"); //Options - Clear.
-		MenuItem clear = new MenuItem("Clear");
+		Menu options = new Menu("Options"); //Options - Stop, Clear.
 		MenuItem stop = new MenuItem("Stop");
+		MenuItem clear = new MenuItem("Clear");
 
 		menuBar.add(game);
 		game.add(readCSV);
 		game.add(run);
 
 		menuBar.add(options);
-		options.add(clear);
 		options.add(stop);
-
+		options.add(clear);
 
 		this.setMenuBar(menuBar);
 
@@ -151,13 +156,14 @@ public class MyFrame extends JFrame implements MouseListener {
 				fList.clear();
 				bList.clear();
 				player = null;
-				playerPixel = null;
 				pacmanPixel.clear();
 				fruitPixel.clear();
 				boxPixel1.clear();
 				boxPixel2.clear();
 				boxPixel3.clear();
 				boxPixel4.clear();
+				playerPixel = null;
+
 				String place = "";
 				JButton open = new JButton();
 				JFileChooser fc = new JFileChooser();
@@ -167,15 +173,15 @@ public class MyFrame extends JFrame implements MouseListener {
 					place = fc.getSelectedFile().getAbsolutePath();
 				}
 				file = place;
-				Play play = new Play(file);
+				Play play = new Play(file); //plays the game on this file.
+				play.setIDs(314882077, 322093311); //sets the group id.
 
-				play.setIDs(314882077, 322093311);
-
+				//gets the GPS coordinates of the "arena".
 				String map_data = play.getBoundingBox();
 				System.out.println("Bounding Box info: " + map_data);
 
+				//gets the game-board data.
 				ArrayList<String> board_data = play.getBoard();
-				System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa"+ board_data +   "aaaa");
 				for(int i = 0; i < board_data.size(); i++) {
 					System.out.println(board_data.get(i));
 				}
@@ -186,7 +192,7 @@ public class MyFrame extends JFrame implements MouseListener {
 					if(board_data.get(i).charAt(0) == 'M') {
 						Robot.Packman player = new Robot.Packman(board_data.get(i));
 
-						playerPixel = new Pixel(m.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
+						playerPixel = new Pixel(map.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
 					}
 
 					//adds all the pacmans in the game to pacman list in this game.
@@ -194,7 +200,7 @@ public class MyFrame extends JFrame implements MouseListener {
 						Robot.Packman pacman = new Robot.Packman(board_data.get(i));
 						pList.add(pacman);
 
-						Pixel p = new Pixel(m.Point2Pixel(pacman.getLocation().y(), pacman.getLocation().x()));
+						Pixel p = new Pixel(map.Point2Pixel(pacman.getLocation().y(), pacman.getLocation().x()));
 						pacmanPixel.add(p);
 					}
 
@@ -203,7 +209,7 @@ public class MyFrame extends JFrame implements MouseListener {
 						Robot.Fruit fruit = new Robot.Fruit(board_data.get(i));
 						fList.add(fruit);
 
-						Pixel f = new Pixel(m.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
+						Pixel f = new Pixel(map.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
 						fruitPixel.add(f);
 					}
 
@@ -212,7 +218,7 @@ public class MyFrame extends JFrame implements MouseListener {
 						Robot.Packman ghost = new Robot.Packman(board_data.get(i));
 						gList.add(ghost);
 
-						Pixel g = new Pixel(m.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
+						Pixel g = new Pixel(map.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
 						ghostPixel.add(g);
 					}
 
@@ -221,16 +227,15 @@ public class MyFrame extends JFrame implements MouseListener {
 						GeoBox box = new GeoBox(board_data.get(i));
 						bList.add(box);
 
-						Pixel b1 = new Pixel(m.Point2Pixel(box.getMin().y(), box.getMin().x()));
+						Pixel b1 = new Pixel(map.Point2Pixel(box.getMin().y(), box.getMin().x()));
 						boxPixel1.add(b1);
-						Pixel b2 = new Pixel(m.Point2Pixel(box.getMin().y(), box.getMax().x()));
+						Pixel b2 = new Pixel(map.Point2Pixel(box.getMin().y(), box.getMax().x()));
 						boxPixel2.add(b2);
-						Pixel b3 = new Pixel(m.Point2Pixel(box.getMax().y(), box.getMax().x()));
+						Pixel b3 = new Pixel(map.Point2Pixel(box.getMax().y(), box.getMax().x()));
 						boxPixel3.add(b3);
-						Pixel b4 = new Pixel(m.Point2Pixel(box.getMax().y(), box.getMax().x()));
+						Pixel b4 = new Pixel(map.Point2Pixel(box.getMax().y(), box.getMax().x()));
 						boxPixel4.add(b4);
 					}
-
 				}
 
 				ReadGameOn = true;
@@ -248,16 +253,17 @@ public class MyFrame extends JFrame implements MouseListener {
 				if(ReadGameOn == false) {
 					System.out.println("You must choose a game.");
 				}
-
 				else {
-					play = new Play(file);
-					play.setIDs(314882077, 322093311);
+					play = new Play(file); //plays the game on this file.
+					play.setIDs(314882077, 322093311); //sets the group id.
 
+					//gets the GPS coordinates of the "arena".
 					String map_data = play.getBoundingBox();
 					System.out.println("Bounding Box info: " + map_data);
 
+					//gets the game-board data.
 					ArrayList<String> board_data = play.getBoard();
-					System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa"+ board_data +   "aaaa1");
+					System.out.println(board_data);
 					for(int i = 0; i < board_data.size(); i++) {
 						System.out.println(board_data.get(i));
 					}
@@ -267,32 +273,38 @@ public class MyFrame extends JFrame implements MouseListener {
 						System.out.println("You must place the player.");
 					}
 					else {
-						play.setInitLocation(player.getLocation().x() , player.getLocation().y());
+						play.setInitLocation(player.getLocation().x() , player.getLocation().y()); //sets the "player" init location.
 
 						//starts the "server".
 						play.start(); //default max time is 100 seconds (1000*100 ms).
 
-						//plays as long as there are "fruits" and time.
-						//						ThreadT S = new ThreadT() ; 
-						//						S.start();
-
-						//stops the server - not needed in the real implementation.
-						//play1.stop();
-						System.out.println("**** Done Game (user stop) ****");
+						System.out.println("******************** Game Over ********************");
 
 						//prints the data & save to the course DB.
 						String info = play.getStatistics();
 						System.out.println(info);
 						repaint();
 						PlayerOn = false;
-						ThreadT S = new ThreadT() ; 
+						AzimuthOn = true;
+						ThreadT S = new ThreadT(); //slow moves.
 						S.start();
-
 					}
 				}
 			}
 		});
 
+		//listens to stop key.
+		stop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				play.stop();
+				PlayerOn = false;
+				AzimuthOn = false;
+				repaint();
+			}
+		});
+		
 		//listens to clear key.
 		clear.addActionListener(new ActionListener() {
 			@Override
@@ -304,7 +316,6 @@ public class MyFrame extends JFrame implements MouseListener {
 				gList.clear();
 				bList.clear();
 				player = null;
-				playerPixel = null;
 				pacmanPixel.clear();
 				fruitPixel.clear();
 				ghostPixel.clear();
@@ -312,42 +323,31 @@ public class MyFrame extends JFrame implements MouseListener {
 				boxPixel2.clear();
 				boxPixel3.clear();
 				boxPixel4.clear();
+				playerPixel = null;
 				play.getBoard().clear();
 
 				countPacman = 0;
 				countFruit = 0;
 				ReadGameOn = false;
 				PlayerOn = false;
-				System.out.println("----"+pacmanPixel.toString());
-				System.out.println("-------"+ pList.toString());
+				AzimuthOn = false;
+				
 				repaint();
 			}
 		});
-
-		//listens to clear key.
-		stop.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-				play.stop();
-
-				repaint();
-			}
-		});
-
-		//gets the ghost image.
-		try {
-			//			InputStream in = this.getClass().getClassLoader().getName();
-			System.out.println(this.getClass());
-			ghostImage = ImageIO.read(new File("ghost.png"));
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
 
 		//gets the player image.
 		try {
 			playerImage = ImageIO.read(new File("player.png"));
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		//gets the ghost image.
+		try {
+			System.out.println(this.getClass());
+			ghostImage = ImageIO.read(new File("ghost.png"));
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -386,24 +386,19 @@ public class MyFrame extends JFrame implements MouseListener {
 		Pixel p = new Pixel(x, y);
 		if(PlayerOn) { //draws a player where mouse clicked.
 			this.playerPixel = new Pixel(p);
-			Point3D temp = m.Pixel2Point(p);
+			Point3D temp = map.Pixel2Point(p);
 			Coords.LatLonAlt point = new LatLonAlt(temp.y(), temp.x(), 0);
-			System.out.println(point);
-			this.player = new Packman(point, 2);
-			System.out.println(point);
+			this.player = new Packman(point, 0);
+			System.out.println(p);
+			System.out.println(temp);
 		}
-		else {
-			Point3D po = m.Pixel2Point(p);
-			Point3D playerPoint = m.Pixel2Point(playerPixel);
+		else if(AzimuthOn){
+			Point3D po = map.Pixel2Point(p);
+			Point3D playerPoint = map.Pixel2Point(playerPixel);
 			azi = playerPoint.north_angle(po);
-			System.out.println("point: "+ po.toString());
-			System.out.println("playerPixel: "+ playerPoint.toString());
-			System.out.println("azi: "+ azi);
-
-
-
 		}
-		repaint();		
+		repaint();	
+		
 	}
 
 	@Override
@@ -426,16 +421,15 @@ public class MyFrame extends JFrame implements MouseListener {
 
 	}
 
-	public class MyPanel extends JPanel {
+//	public class MyPanel extends JPanel {
 
 		/*
 		 * This function paints pacmans, fruits, ghosts and boxes on the game frame.
 		 * @see java.awt.Window#paint(java.awt.Graphics).
 		 */
-		
 		public void paint(Graphics g) {
 
-			g.drawImage(m.getImage(), 0, 0, this.getWidth(), this.getHeight(), this);
+			g.drawImage(map.getImage(), 0, 0, this.getWidth(), this.getHeight(), this);
 			Pixel pFram = new Pixel(this.getWidth(), this.getHeight());
 			pacmanPixel = new ArrayList<Pixel>();
 			fruitPixel = new ArrayList<Pixel>();
@@ -446,35 +440,35 @@ public class MyFrame extends JFrame implements MouseListener {
 			boxPixel4 = new ArrayList<Pixel>();
 
 			//uploads the game pixels if change the frame size.
-			playerPixel = m.changeFrame(pFram, playerPixel, pacmanPixel, fruitPixel, ghostPixel, boxPixel1, boxPixel2, boxPixel3, boxPixel4);
+			playerPixel = map.changeFrame(pFram, playerPixel, pacmanPixel, fruitPixel, ghostPixel, boxPixel1, boxPixel2, boxPixel3, boxPixel4);
 
 			//changes points of pacmans in game to pixels.
 			for (int i = 0; i < pList.size(); i++) {
-				Pixel pix = m.Point2Pixel(pList.get(i).getLocation().y(), pList.get(i).getLocation().x());
+				Pixel pix = map.Point2Pixel(pList.get(i).getLocation().y(), pList.get(i).getLocation().x());
 				pacmanPixel.add(pix);
 			}
 
 			//changes points of fruits in game to pixels.
 			for (int i = 0; i < fList.size(); i++) {
-				Pixel pix = m.Point2Pixel(fList.get(i).getLocation().y(), fList.get(i).getLocation().x());
+				Pixel pix = map.Point2Pixel(fList.get(i).getLocation().y(), fList.get(i).getLocation().x());
 				fruitPixel.add(pix);
 			}
 
 			//changes points of ghost in game to pixels. 
 			for (int i = 0; i < gList.size(); i++) {
-				Pixel pix = m.Point2Pixel(gList.get(i).getLocation().y(), gList.get(i).getLocation().x());
+				Pixel pix = map.Point2Pixel(gList.get(i).getLocation().y(), gList.get(i).getLocation().x());
 				ghostPixel.add(pix);
 			}
 
 			//changes points of boxes in game to pixels.
 			for (int i = 0; i < bList.size(); i++) {
-				Pixel pix1 = m.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMin().x());
+				Pixel pix1 = map.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMin().x());
 				boxPixel1.add(pix1);
-				Pixel pix2 = m.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMax().x());
+				Pixel pix2 = map.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMax().x());
 				boxPixel2.add(pix2);
-				Pixel pix3 = m.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMax().x());
+				Pixel pix3 = map.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMax().x());
 				boxPixel3.add(pix3);
-				Pixel pix4 = m.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMin().x());
+				Pixel pix4 = map.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMin().x());
 				boxPixel4.add(pix4);
 			}
 
@@ -497,23 +491,22 @@ public class MyFrame extends JFrame implements MouseListener {
 
 			//draws the player. 
 			if (playerPixel != null) {
-				g.drawImage(playerImage, (int)playerPixel.getX(), (int)playerPixel.getY(), 60, 40, this);
+				g.drawImage(playerImage, (int)playerPixel.getX(), (int)playerPixel.getY(), 30, 30, this);
 			}
 
 			//draws all the ghost on the list. 
 			for (int i = 0; i < ghostPixel.size(); i++) {
 				g.drawImage(ghostImage, (int)ghostPixel.get(i).getX(), (int)ghostPixel.get(i).getY(), 60, 40, this);
 			}
-
 		}
+//	}
 
-	}
 
-
-	public class ThreadT extends Thread
-	{
+	public class ThreadT extends Thread {
+		
 		@Override
 		public void run() {
+			
 			int i = 0 ; 
 			while(play.isRuning()) {
 				i++;
@@ -528,9 +521,6 @@ public class MyFrame extends JFrame implements MouseListener {
 
 				//getS the game-board current state.
 				ArrayList<String> board_data = play.getBoard();
-				//				for(int a = 0; a   < board_data.size(); a++) {
-				//					System.out.println(board_data.get(a));
-				//				}
 
 				//clears all before read a new game (except the boxes).
 				pList.clear();
@@ -548,7 +538,7 @@ public class MyFrame extends JFrame implements MouseListener {
 					if(board_data.get(i1).charAt(0) == 'M') {
 						Robot.Packman player = new Robot.Packman(board_data.get(i1));
 
-						playerPixel = new Pixel(m.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
+						playerPixel = new Pixel(map.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
 					}
 
 					//adds all the pacmans in the game to pacman list in this game.
@@ -556,7 +546,7 @@ public class MyFrame extends JFrame implements MouseListener {
 						Robot.Packman pacman = new Robot.Packman(board_data.get(i1));
 						pList.add(pacman);
 
-						Pixel p = new Pixel(m.Point2Pixel(pacman.getLocation().y(), pacman.getLocation().x()));
+						Pixel p = new Pixel(map.Point2Pixel(pacman.getLocation().y(), pacman.getLocation().x()));
 						pacmanPixel.add(p);
 					}
 
@@ -565,7 +555,7 @@ public class MyFrame extends JFrame implements MouseListener {
 						Robot.Fruit fruit = new Robot.Fruit(board_data.get(i1));
 						fList.add(fruit);
 
-						Pixel f = new Pixel(m.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
+						Pixel f = new Pixel(map.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
 						fruitPixel.add(f);
 					}
 
@@ -574,21 +564,21 @@ public class MyFrame extends JFrame implements MouseListener {
 						Robot.Packman ghost = new Robot.Packman(board_data.get(i1));
 						gList.add(ghost);
 
-						Pixel g = new Pixel(m.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
+						Pixel g = new Pixel(map.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
 						ghostPixel.add(g);
 					}
 				}
-				System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa"+ board_data +   "aaaa");
+				System.out.println(board_data);
 				repaint();
 				try {
 					Thread.sleep(200);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+				}
+				catch (InterruptedException e) {
+					
 					e.printStackTrace();
 				}
 			}
-
 		}
-
-	}	
+	}
+	
 }
