@@ -17,6 +17,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import Coords.GeoBox;
 import Coords.LatLonAlt;
 import Geom.Point3D;
@@ -31,6 +33,7 @@ import Robot.Play;
  */
 public class MyFrame extends JFrame implements MouseListener {
 
+	
 	Play play;
 	Robot.Game g;
 	public Map m;
@@ -59,6 +62,7 @@ public class MyFrame extends JFrame implements MouseListener {
 	private boolean PlayerOn = false; //if true - draws player. else - nothing.
 	private boolean ReadGameOn = false; //if true - draws player. else - need to read game.
 
+	
 	/*
 	 * An empty constructor.
 	 */
@@ -114,6 +118,9 @@ public class MyFrame extends JFrame implements MouseListener {
 	 */
 	private void initGUI() {
 
+		MyPanel grafic = new MyPanel();
+		add(grafic);
+		
 		MenuBar menuBar = new MenuBar();
 		Menu game = new Menu("Game"); //Game - Read game, Run.
 		MenuItem readCSV = new MenuItem("Read game");
@@ -370,81 +377,81 @@ public class MyFrame extends JFrame implements MouseListener {
 	 * This function paints pacmans, fruits, ghosts and boxes on the game frame.
 	 * @see java.awt.Window#paint(java.awt.Graphics).
 	 */
-	public void paint(Graphics g) {
-
-		g.drawImage(m.getImage(), 0, 0, this.getWidth(), this.getHeight(), this);
-		Pixel pFram = new Pixel(this.getWidth(), this.getHeight());
-		pacmanPixel = new ArrayList<Pixel>();
-		fruitPixel = new ArrayList<Pixel>();
-		ghostPixel = new ArrayList<Pixel>();
-		boxPixel1 = new ArrayList<Pixel>();
-		boxPixel2 = new ArrayList<Pixel>();
-		boxPixel3 = new ArrayList<Pixel>();
-		boxPixel4 = new ArrayList<Pixel>();
-
-		//uploads the game pixels if change the frame size.
-		playerPixel = m.changeFrame(pFram, playerPixel, pacmanPixel, fruitPixel, ghostPixel, boxPixel1, boxPixel2, boxPixel3, boxPixel4);
-
-		//changes points of pacmans in game to pixels.
-		for (int i = 0; i < pList.size(); i++) {
-			Pixel pix = m.Point2Pixel(pList.get(i).getLocation().y(), pList.get(i).getLocation().x());
-			pacmanPixel.add(pix);
-		}
-
-		//changes points of fruits in game to pixels.
-		for (int i = 0; i < fList.size(); i++) {
-			Pixel pix = m.Point2Pixel(fList.get(i).getLocation().y(), fList.get(i).getLocation().x());
-			fruitPixel.add(pix);
-		}
-
-		//changes points of ghost in game to pixels. 
-		for (int i = 0; i < gList.size(); i++) {
-			Pixel pix = m.Point2Pixel(gList.get(i).getLocation().y(), gList.get(i).getLocation().x());
-			ghostPixel.add(pix);
-		}
-
-		//changes points of boxes in game to pixels.
-		for (int i = 0; i < bList.size(); i++) {
-			Pixel pix1 = m.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMin().x());
-			boxPixel1.add(pix1);
-			Pixel pix2 = m.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMax().x());
-			boxPixel2.add(pix2);
-			Pixel pix3 = m.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMax().x());
-			boxPixel3.add(pix3);
-			Pixel pix4 = m.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMin().x());
-			boxPixel4.add(pix4);
-		}
-
-		//draws all the boxes on the list.
-		for (int i = 0; i < boxPixel1.size(); i++) {
-			double height = boxPixel2.get(i).distance(boxPixel1.get(i));
-			double width = boxPixel4.get(i).distance(boxPixel1.get(i));
-			g.fillRect((int)boxPixel1.get(i).getX(), (int)boxPixel3.get(i).getY(), (int)width, (int)height);
-		}
-
-		//draws all the fruits on the list.
-		for (int i = 0; i < fruitPixel.size(); i++) {
-			g.drawImage(fruitImage, (int)fruitPixel.get(i).getX(), (int)fruitPixel.get(i).getY(), 40, 30, this);
-		}
-
-		//draws all the pacmans on the list.
-		for (int i = 0; i < pacmanPixel.size(); i++) {
-			g.drawImage(pacmanImage, (int)pacmanPixel.get(i).getX(), (int)pacmanPixel.get(i).getY(), 30, 30, this);
-		}
-
-		//draws the player. 
-		if (playerPixel != null) {
-			g.drawImage(playerImage, (int)playerPixel.getX(), (int)playerPixel.getY(), 60, 40, this);
-		}
-
-		//draws all the ghost on the list. 
-		for (int i = 0; i < ghostPixel.size(); i++) {
-			g.drawImage(ghostImage, (int)ghostPixel.get(i).getX(), (int)ghostPixel.get(i).getY(), 60, 40, this);
-		}
-		System.out.println("2----"+pacmanPixel.toString());
-		System.out.println("2-------"+ pList.toString());
-
-	}
+//	public void paint(Graphics g) {
+//
+//		g.drawImage(m.getImage(), 0, 0, this.getWidth(), this.getHeight(), this);
+//		Pixel pFram = new Pixel(this.getWidth(), this.getHeight());
+//		pacmanPixel = new ArrayList<Pixel>();
+//		fruitPixel = new ArrayList<Pixel>();
+//		ghostPixel = new ArrayList<Pixel>();
+//		boxPixel1 = new ArrayList<Pixel>();
+//		boxPixel2 = new ArrayList<Pixel>();
+//		boxPixel3 = new ArrayList<Pixel>();
+//		boxPixel4 = new ArrayList<Pixel>();
+//
+//		//uploads the game pixels if change the frame size.
+//		playerPixel = m.changeFrame(pFram, playerPixel, pacmanPixel, fruitPixel, ghostPixel, boxPixel1, boxPixel2, boxPixel3, boxPixel4);
+//
+//		//changes points of pacmans in game to pixels.
+//		for (int i = 0; i < pList.size(); i++) {
+//			Pixel pix = m.Point2Pixel(pList.get(i).getLocation().y(), pList.get(i).getLocation().x());
+//			pacmanPixel.add(pix);
+//		}
+//
+//		//changes points of fruits in game to pixels.
+//		for (int i = 0; i < fList.size(); i++) {
+//			Pixel pix = m.Point2Pixel(fList.get(i).getLocation().y(), fList.get(i).getLocation().x());
+//			fruitPixel.add(pix);
+//		}
+//
+//		//changes points of ghost in game to pixels. 
+//		for (int i = 0; i < gList.size(); i++) {
+//			Pixel pix = m.Point2Pixel(gList.get(i).getLocation().y(), gList.get(i).getLocation().x());
+//			ghostPixel.add(pix);
+//		}
+//
+//		//changes points of boxes in game to pixels.
+//		for (int i = 0; i < bList.size(); i++) {
+//			Pixel pix1 = m.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMin().x());
+//			boxPixel1.add(pix1);
+//			Pixel pix2 = m.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMax().x());
+//			boxPixel2.add(pix2);
+//			Pixel pix3 = m.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMax().x());
+//			boxPixel3.add(pix3);
+//			Pixel pix4 = m.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMin().x());
+//			boxPixel4.add(pix4);
+//		}
+//
+//		//draws all the boxes on the list.
+//		for (int i = 0; i < boxPixel1.size(); i++) {
+//			double height = boxPixel2.get(i).distance(boxPixel1.get(i));
+//			double width = boxPixel4.get(i).distance(boxPixel1.get(i));
+//			g.fillRect((int)boxPixel1.get(i).getX(), (int)boxPixel3.get(i).getY(), (int)width, (int)height);
+//		}
+//
+//		//draws all the fruits on the list.
+//		for (int i = 0; i < fruitPixel.size(); i++) {
+//			g.drawImage(fruitImage, (int)fruitPixel.get(i).getX(), (int)fruitPixel.get(i).getY(), 40, 30, this);
+//		}
+//
+//		//draws all the pacmans on the list.
+//		for (int i = 0; i < pacmanPixel.size(); i++) {
+//			g.drawImage(pacmanImage, (int)pacmanPixel.get(i).getX(), (int)pacmanPixel.get(i).getY(), 30, 30, this);
+//		}
+//
+//		//draws the player. 
+//		if (playerPixel != null) {
+//			g.drawImage(playerImage, (int)playerPixel.getX(), (int)playerPixel.getY(), 60, 40, this);
+//		}
+//
+//		//draws all the ghost on the list. 
+//		for (int i = 0; i < ghostPixel.size(); i++) {
+//			g.drawImage(ghostImage, (int)ghostPixel.get(i).getX(), (int)ghostPixel.get(i).getY(), 60, 40, this);
+//		}
+//		System.out.println("2----"+pacmanPixel.toString());
+//		System.out.println("2-------"+ pList.toString());
+//
+//	}
 
 	/*
 	 * This function handles mouse clicks events.
@@ -496,6 +503,85 @@ public class MyFrame extends JFrame implements MouseListener {
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 
+	}
+	
+	public class MyPanel extends JPanel {
+		public void paint(Graphics g) {
+
+			g.drawImage(m.getImage(), 0, 0, this.getWidth(), this.getHeight(), this);
+			Pixel pFram = new Pixel(this.getWidth(), this.getHeight());
+			pacmanPixel = new ArrayList<Pixel>();
+			fruitPixel = new ArrayList<Pixel>();
+			ghostPixel = new ArrayList<Pixel>();
+			boxPixel1 = new ArrayList<Pixel>();
+			boxPixel2 = new ArrayList<Pixel>();
+			boxPixel3 = new ArrayList<Pixel>();
+			boxPixel4 = new ArrayList<Pixel>();
+
+			//uploads the game pixels if change the frame size.
+			playerPixel = m.changeFrame(pFram, playerPixel, pacmanPixel, fruitPixel, ghostPixel, boxPixel1, boxPixel2, boxPixel3, boxPixel4);
+
+			//changes points of pacmans in game to pixels.
+			for (int i = 0; i < pList.size(); i++) {
+				Pixel pix = m.Point2Pixel(pList.get(i).getLocation().y(), pList.get(i).getLocation().x());
+				pacmanPixel.add(pix);
+			}
+
+			//changes points of fruits in game to pixels.
+			for (int i = 0; i < fList.size(); i++) {
+				Pixel pix = m.Point2Pixel(fList.get(i).getLocation().y(), fList.get(i).getLocation().x());
+				fruitPixel.add(pix);
+			}
+
+			//changes points of ghost in game to pixels. 
+			for (int i = 0; i < gList.size(); i++) {
+				Pixel pix = m.Point2Pixel(gList.get(i).getLocation().y(), gList.get(i).getLocation().x());
+				ghostPixel.add(pix);
+			}
+
+			//changes points of boxes in game to pixels.
+			for (int i = 0; i < bList.size(); i++) {
+				Pixel pix1 = m.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMin().x());
+				boxPixel1.add(pix1);
+				Pixel pix2 = m.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMax().x());
+				boxPixel2.add(pix2);
+				Pixel pix3 = m.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMax().x());
+				boxPixel3.add(pix3);
+				Pixel pix4 = m.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMin().x());
+				boxPixel4.add(pix4);
+			}
+
+			//draws all the boxes on the list.
+			for (int i = 0; i < boxPixel1.size(); i++) {
+				double height = boxPixel2.get(i).distance(boxPixel1.get(i));
+				double width = boxPixel4.get(i).distance(boxPixel1.get(i));
+				g.fillRect((int)boxPixel1.get(i).getX(), (int)boxPixel3.get(i).getY(), (int)width, (int)height);
+			}
+
+			//draws all the fruits on the list.
+			for (int i = 0; i < fruitPixel.size(); i++) {
+				g.drawImage(fruitImage, (int)fruitPixel.get(i).getX(), (int)fruitPixel.get(i).getY(), 40, 30, this);
+			}
+
+			//draws all the pacmans on the list.
+			for (int i = 0; i < pacmanPixel.size(); i++) {
+				g.drawImage(pacmanImage, (int)pacmanPixel.get(i).getX(), (int)pacmanPixel.get(i).getY(), 30, 30, this);
+			}
+
+			//draws the player. 
+			if (playerPixel != null) {
+				g.drawImage(playerImage, (int)playerPixel.getX(), (int)playerPixel.getY(), 60, 40, this);
+			}
+
+			//draws all the ghost on the list. 
+			for (int i = 0; i < ghostPixel.size(); i++) {
+				g.drawImage(ghostImage, (int)ghostPixel.get(i).getX(), (int)ghostPixel.get(i).getY(), 60, 40, this);
+			}
+			System.out.println("2----"+pacmanPixel.toString());
+			System.out.println("2-------"+ pList.toString());
+
+		}
+		
 	}
 
 
