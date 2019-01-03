@@ -17,7 +17,7 @@ public class AlgoBoxes {
 
 		if(fruitDis < pacmanDis) {
 			while(!(game.getPlayer().getLocation().equalsXY(closestFruit.getLocation()))) {
-				
+
 			}
 		}
 	}
@@ -45,21 +45,26 @@ public class AlgoBoxes {
 		return corners;
 	}
 
-	/*
-	 * This function says if the box is in other box.
+	/**
+	 * This function says if a point is in other box.
 	 * then, we don't have to compute it's coordinates for the algorithm.
+	 * @param p represent a point of a corner that we want to check.
+	 * @param b represent the box that the corner came from.
+	 * @param boxes an Array List of all the boxes in the game.
+	 * @return true if the point is in one of the boxes and false otherwise.
 	 */
-	public boolean PointIn (Point3D p, ArrayList<GeoBox> boxes) {
+	public boolean PointIn (Point3D p, GeoBox b, ArrayList<GeoBox> boxes) {
 
 		for (GeoBox it: boxes) {
 			Point3D downLeft = new Point3D(it.getMin().y(), it.getMin().x());
 			Point3D downRight = new Point3D(it.getMax().y(), it.getMin().x());
-			//			Point3D upLeft = new Point3D(it.getMin().y(), it.getMax().x());
+			Point3D upLeft = new Point3D(it.getMin().y(), it.getMax().x());
 			Point3D upRight = new Point3D(it.getMax().y(), it.getMax().x());
 
-			if (downLeft.x() <= p.x() && downRight.x() >= p.x())
-				if (downRight.y() <= p.y() && upRight.y() >= p.y())
-					return true;
+			if (!b.equals(it))
+				if (downLeft.x() <= p.x() && downRight.x() >= p.x())
+					if (downRight.y() <= p.y() && upRight.y() >= p.y())
+						return true;
 		}
 		return false;
 	}
@@ -97,5 +102,4 @@ public class AlgoBoxes {
 		}
 		return closetPacman;
 	}
-
 }

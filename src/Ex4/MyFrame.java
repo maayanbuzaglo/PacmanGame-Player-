@@ -20,6 +20,7 @@ import javax.swing.JFrame;
 import Coords.GeoBox;
 import Coords.LatLonAlt;
 import Geom.Point3D;
+import Pacman_game.AlgoBoxes;
 import Pacman_game.Map;
 import Pacman_game.Pixel;
 import Robot.Game;
@@ -234,7 +235,8 @@ public class MyFrame extends JFrame implements MouseListener {
 						boxPixel4.add(downRight);
 					}
 				}
-
+				
+				
 				ReadGameOn = true;
 				PlayerOn = true;
 				repaint();
@@ -279,6 +281,8 @@ public class MyFrame extends JFrame implements MouseListener {
 						repaint();
 						PlayerOn = false;
 						AzimuthOn = true;
+					
+						
 						ThreadT S = new ThreadT(); //slow moves.
 						S.start();
 					}
@@ -386,8 +390,8 @@ public class MyFrame extends JFrame implements MouseListener {
 			Point3D po = map.Pixel2Point(p);
 			Point3D playerPoint = map.Pixel2Point(playerPixel);
 			azi = playerPoint.north_angle(po);
-		}
-		repaint();	
+		}		
+		repaint();
 		
 	}
 
@@ -419,6 +423,11 @@ public class MyFrame extends JFrame implements MouseListener {
 		 */
 		public void paint(Graphics g) {
 
+			AlgoBoxes a = new AlgoBoxes();
+			boolean ans = a.PointIn(new Point3D(bList.get(0).getMin().y(), bList.get(0).getMin().x()),bList.get(0) , bList);
+			System.out.println("------"+ans);
+			System.out.println("-----------------------");
+			
 			g.drawImage(map.getImage(), 0, 0, this.getWidth(), this.getHeight(), this);
 			Pixel pFram = new Pixel(this.getWidth(), this.getHeight());
 			pacmanPixel = new ArrayList<Pixel>();
