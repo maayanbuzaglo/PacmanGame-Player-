@@ -16,7 +16,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+//import javax.swing.JPanel;
 import Coords.GeoBox;
 import Coords.LatLonAlt;
 import Geom.Point3D;
@@ -124,8 +124,8 @@ public class MyFrame extends JFrame implements MouseListener {
 	 */
 	private void initGUI() {
 
-		MyPanel grafic = new MyPanel();
-		add(grafic);
+//		MyPanel grafic = new MyPanel();
+//		add(grafic);
 
 		MenuBar menuBar = new MenuBar();
 		Menu game = new Menu("Game"); //Game - Read game, Run.
@@ -182,9 +182,6 @@ public class MyFrame extends JFrame implements MouseListener {
 
 				//gets the game-board data.
 				ArrayList<String> board_data = play.getBoard();
-//				for(int i = 0; i < board_data.size(); i++) {
-//					System.out.println(board_data.get(i));
-//				}
 
 				for(int i = 0; i < board_data.size(); i++) {
 
@@ -263,10 +260,6 @@ public class MyFrame extends JFrame implements MouseListener {
 
 					//gets the game-board data.
 					ArrayList<String> board_data = play.getBoard();
-//					System.out.println(board_data);
-//					for(int i = 0; i < board_data.size(); i++) {
-//						System.out.println(board_data.get(i));
-//					}
 
 					//if a player was not chosen.
 					if(player == null) {
@@ -346,7 +339,6 @@ public class MyFrame extends JFrame implements MouseListener {
 		
 		//gets the ghost image.
 		try {
-			System.out.println(this.getClass());
 			ghostImage = ImageIO.read(new File("ghost.png"));
 		}
 		catch (IOException e) {
@@ -389,8 +381,6 @@ public class MyFrame extends JFrame implements MouseListener {
 			Point3D temp = map.Pixel2Point(p);
 			Coords.LatLonAlt point = new LatLonAlt(temp.y(), temp.x(), 0);
 			this.player = new Packman(point, 0);
-			System.out.println(p);
-			System.out.println(temp);
 		}
 		else if(AzimuthOn){
 			Point3D po = map.Pixel2Point(p);
@@ -421,7 +411,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 	}
 
-	public class MyPanel extends JPanel {
+//	public class MyPanel extends JPanel {
 
 		/*
 		 * This function paints pacmans, fruits, ghosts and boxes on the game frame.
@@ -499,7 +489,7 @@ public class MyFrame extends JFrame implements MouseListener {
 				g.drawImage(ghostImage, (int)ghostPixel.get(i).getX(), (int)ghostPixel.get(i).getY(), 60, 40, this);
 			}
 		}
-	}
+//	}
 
 
 	public class ThreadT extends Thread {
