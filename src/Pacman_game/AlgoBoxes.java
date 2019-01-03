@@ -8,6 +8,26 @@ import Robot.Game;
 
 public class AlgoBoxes {
 
+	public Map map;
+	public ArrayList<GeoBox> bList; //list of boxes.
+	public ArrayList<Point3D> outerPoint; //list of coordinate of the relevant corners.
+	public ArrayList<Pixel> outerPixel; //list of Pixel of the relevant corners.
+	public Robot.Game game; //a game.
+
+	public AlgoBoxes() {
+
+		bList = new ArrayList<GeoBox>();
+		outerPoint = new ArrayList<Point3D>();
+		this.game = new Game();
+	}
+
+	public AlgoBoxes(Game game) {
+
+		bList = new ArrayList<GeoBox>();
+		outerPoint = new ArrayList<Point3D>();
+		this.game = game;
+	}
+
 	public void mainAlgo(Game game) {
 
 		Robot.Fruit closestFruit = closetFruit(game);
@@ -19,6 +39,44 @@ public class AlgoBoxes {
 			while(!(game.getPlayer().getLocation().equalsXY(closestFruit.getLocation()))) {
 
 			}
+		}
+		for (int i = 0; i < game.sizeB(); i++) {
+			bList.add(game.getBox(i));
+		}
+		boolean isIn = false;
+		for (GeoBox it: bList) {
+			Point3D downLeft = new Point3D(it.getMin().y(), it.getMin().x());
+			Point3D downRight = new Point3D(it.getMax().y(), it.getMin().x());
+			Point3D upLeft = new Point3D(it.getMin().y(), it.getMax().x());
+			Point3D upRight = new Point3D(it.getMax().y(), it.getMax().x());
+
+			//check if the corner down right is in an other box.
+			isIn = this.PointIn(downRight, it, bList);
+			if (!isIn) {
+				outerPoint.add(downRight);
+			}
+
+			//check if the corner down left is in an other box.
+			isIn = this.PointIn(downLeft, it, bList);
+			if (!isIn) {
+				outerPoint.add(downLeft);
+			}
+
+			//check if the corner up left is in an other box.
+			isIn = this.PointIn(upLeft, it, bList);
+			if (!isIn) {
+				outerPoint.add(upLeft);
+			}
+
+			//check if the corner up right is in an other box.
+			isIn = this.PointIn(upRight, it, bList);
+			if (!isIn) {
+				outerPoint.add(upRight);
+			}
+		}
+		for (Point3D it: outerPoint) {
+			Pixel temp = map.Point2Pixel(it.y(), it.x());
+			outerPixel.add(temp);
 		}
 	}
 

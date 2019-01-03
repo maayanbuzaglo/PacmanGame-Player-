@@ -281,8 +281,7 @@ public class MyFrame extends JFrame implements MouseListener {
 						repaint();
 						PlayerOn = false;
 						AzimuthOn = true;
-					
-						
+											
 						ThreadT S = new ThreadT(); //slow moves.
 						S.start();
 					}
@@ -422,11 +421,6 @@ public class MyFrame extends JFrame implements MouseListener {
 		 * @see java.awt.Window#paint(java.awt.Graphics).
 		 */
 		public void paint(Graphics g) {
-
-			AlgoBoxes a = new AlgoBoxes();
-			boolean ans = a.PointIn(new Point3D(bList.get(0).getMin().y(), bList.get(0).getMin().x()),bList.get(0) , bList);
-			System.out.println("------"+ans);
-			System.out.println("-----------------------");
 			
 			g.drawImage(map.getImage(), 0, 0, this.getWidth(), this.getHeight(), this);
 			Pixel pFram = new Pixel(this.getWidth(), this.getHeight());
