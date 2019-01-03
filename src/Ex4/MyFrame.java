@@ -124,8 +124,8 @@ public class MyFrame extends JFrame implements MouseListener {
 	 */
 	private void initGUI() {
 
-//		MyPanel grafic = new MyPanel();
-//		add(grafic);
+		MyPanel grafic = new MyPanel();
+		add(grafic);
 
 		MenuBar menuBar = new MenuBar();
 		Menu game = new Menu("Game"); //Game - Read game, Run.
@@ -182,9 +182,9 @@ public class MyFrame extends JFrame implements MouseListener {
 
 				//gets the game-board data.
 				ArrayList<String> board_data = play.getBoard();
-				for(int i = 0; i < board_data.size(); i++) {
-					System.out.println(board_data.get(i));
-				}
+//				for(int i = 0; i < board_data.size(); i++) {
+//					System.out.println(board_data.get(i));
+//				}
 
 				for(int i = 0; i < board_data.size(); i++) {
 
@@ -227,14 +227,14 @@ public class MyFrame extends JFrame implements MouseListener {
 						GeoBox box = new GeoBox(board_data.get(i));
 						bList.add(box);
 
-						Pixel b1 = new Pixel(map.Point2Pixel(box.getMin().y(), box.getMin().x()));
-						boxPixel1.add(b1);
-						Pixel b2 = new Pixel(map.Point2Pixel(box.getMin().y(), box.getMax().x()));
-						boxPixel2.add(b2);
-						Pixel b3 = new Pixel(map.Point2Pixel(box.getMax().y(), box.getMax().x()));
-						boxPixel3.add(b3);
-						Pixel b4 = new Pixel(map.Point2Pixel(box.getMax().y(), box.getMax().x()));
-						boxPixel4.add(b4);
+						Pixel downLeft = new Pixel(map.Point2Pixel(box.getMin().y(), box.getMin().x()));
+						boxPixel1.add(downLeft);
+						Pixel upLeft = new Pixel(map.Point2Pixel(box.getMin().y(), box.getMax().x()));
+						boxPixel2.add(upLeft);
+						Pixel upRight = new Pixel(map.Point2Pixel(box.getMax().y(), box.getMax().x()));
+						boxPixel3.add(upRight);
+						Pixel downRight = new Pixel(map.Point2Pixel(box.getMax().y(), box.getMin().x()));
+						boxPixel4.add(downRight);
 					}
 				}
 
@@ -263,10 +263,10 @@ public class MyFrame extends JFrame implements MouseListener {
 
 					//gets the game-board data.
 					ArrayList<String> board_data = play.getBoard();
-					System.out.println(board_data);
-					for(int i = 0; i < board_data.size(); i++) {
-						System.out.println(board_data.get(i));
-					}
+//					System.out.println(board_data);
+//					for(int i = 0; i < board_data.size(); i++) {
+//						System.out.println(board_data.get(i));
+//					}
 
 					//if a player was not chosen.
 					if(player == null) {
@@ -421,7 +421,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 	}
 
-//	public class MyPanel extends JPanel {
+	public class MyPanel extends JPanel {
 
 		/*
 		 * This function paints pacmans, fruits, ghosts and boxes on the game frame.
@@ -462,14 +462,14 @@ public class MyFrame extends JFrame implements MouseListener {
 
 			//changes points of boxes in game to pixels.
 			for (int i = 0; i < bList.size(); i++) {
-				Pixel pix1 = map.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMin().x());
-				boxPixel1.add(pix1);
-				Pixel pix2 = map.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMax().x());
-				boxPixel2.add(pix2);
-				Pixel pix3 = map.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMax().x());
-				boxPixel3.add(pix3);
-				Pixel pix4 = map.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMin().x());
-				boxPixel4.add(pix4);
+				Pixel downLeft = map.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMin().x());
+				boxPixel1.add(downLeft);
+				Pixel upLeft = map.Point2Pixel(bList.get(i).getMin().y(), bList.get(i).getMax().x());
+				boxPixel2.add(upLeft);
+				Pixel upRight = map.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMax().x());
+				boxPixel3.add(upRight);
+				Pixel downRight = map.Point2Pixel(bList.get(i).getMax().y(), bList.get(i).getMin().x());
+				boxPixel4.add(downRight);
 			}
 
 			//draws all the boxes on the list.
@@ -499,7 +499,7 @@ public class MyFrame extends JFrame implements MouseListener {
 				g.drawImage(ghostImage, (int)ghostPixel.get(i).getX(), (int)ghostPixel.get(i).getY(), 60, 40, this);
 			}
 		}
-//	}
+	}
 
 
 	public class ThreadT extends Thread {
@@ -568,7 +568,6 @@ public class MyFrame extends JFrame implements MouseListener {
 						ghostPixel.add(g);
 					}
 				}
-				System.out.println(board_data);
 				repaint();
 				try {
 					Thread.sleep(200);
