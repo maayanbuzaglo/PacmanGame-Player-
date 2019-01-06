@@ -2,68 +2,61 @@ package Pacman_game;
 
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+
+import com.mysql.fabric.xmlrpc.base.Array;
+
 import Coords.Coords;
 import Coords.GeoBox;
 import Geom.Point3D;
 import Robot.Game;
+import graph.Graph;
+import graph.Graph_Algo;
+import graph.Node;
 
 public class AlgoBoxes {
 
 	public Map map;
 	public ArrayList<GeoBox> bList; //list of boxes.
-	public ArrayList<Point3D> outerPoint; //list of coordinate of the relevant corners.
-	public ArrayList<Pixel> outerPixel; //list of Pixel of the relevant corners.
+	public ArrayList<Point3D> outerPoint; //list of coordinates of the relevant corners.
+	public ArrayList<Point3D> outerPixel; //list of Pixels of the relevant corners.
+	public ArrayList<Line2D> cornersLine; //lists of all the lines in the path to the target.
 	public Robot.Game game; //a game.
-	public ArrayList<Line2D> cornersLine;
 
+	/*
+	 * An empty constructor.
+	 */
 	public AlgoBoxes() {
 
-		bList = new ArrayList<GeoBox>();
-		outerPoint = new ArrayList<Point3D>();
-		cornersLine = new ArrayList<Line2D>();
-		this.game = new Game();		
+		bList = new ArrayList<GeoBox>(); //list of boxes.
+		outerPoint = new ArrayList<Point3D>(); //list of coordinates of the relevant corners.
+		cornersLine = new ArrayList<Line2D>(); //lists of all the lines in the path to the target.
+		this.game = new Game(); //a game.
 	}
 
-	public AlgoBoxes(Game game) {
+	/*
+	 * The main algorithm of this class.
+	 */
+	public void mainAlgo(Game game) {
 
-		outerPoint = new ArrayList<Point3D>();
-		this.game = game;
 		for (int i = 0; i < game.sizeB(); i++) {
 			bList.add(game.getBox(i));
 		}
 		for (GeoBox it: bList) {
-			Point3D downLeft = new Point3D(it.getMin().y(), it.getMin().x());
-			Point3D downRight = new Point3D(it.getMax().y(), it.getMin().x());
-			Point3D upLeft = new Point3D(it.getMin().y(), it.getMax().x());
-			Point3D upRight = new Point3D(it.getMax().y(), it.getMax().x());
-			Line2D temp = new Line2D();
-			temp.setLine(it.getMin().y(), it.getMin().x(), it.getMax().y(), it.getMin().x()); // The line - down left-down right.
+
+			Line2D temp = new Line2D.Double();
+			temp.setLine(it.getMin().y(), it.getMin().x(), it.getMax().y(), it.getMin().x()); //the line - down left-down right.
 			cornersLine.add(temp);
-			temp.setLine(it.getMin().y(), it.getMin().x(), it.getMin().y(), it.getMax().x()); // The line - down left-up left.
+			temp.setLine(it.getMin().y(), it.getMin().x(), it.getMin().y(), it.getMax().x()); //the line - down left-up left.
 			cornersLine.add(temp);
-			temp.setLine(it.getMin().y(), it.getMax().x(), it.getMax().y(), it.getMax().x()); // The line - up left-up right.
+			temp.setLine(it.getMin().y(), it.getMax().x(), it.getMax().y(), it.getMax().x()); //the line - up left-up right.
 			cornersLine.add(temp);
-			temp.setLine(it.getMax().y(), it.getMin().x(), it.getMax().y(), it.getMax().x()); // The line - down right-up right.
+			temp.setLine(it.getMax().y(), it.getMin().x(), it.getMax().y(), it.getMax().x()); //the line - down right-up right.
 			cornersLine.add(temp);
 		}
-	}
 
-	public void mainAlgo(Game game) {
-
-		Robot.Fruit closestFruit = closetFruit(game);
-		Robot.Packman closestPacman = closetPacman(game);
-		double fruitDis = game.getPlayer().getLocation().distance2D(closestFruit.getLocation());
-		double pacmanDis = game.getPlayer().getLocation().distance2D(closestPacman.getLocation());
-
-		if(fruitDis < pacmanDis) {
-			while(!(game.getPlayer().getLocation().equalsXY(closestFruit.getLocation()))) {
-
-			}
-		}
-		for (int i = 0; i < game.sizeB(); i++) {
-			bList.add(game.getBox(i));
-		}
+		//filters all the relevant corners.
 		boolean isIn = false;
+
 		for (GeoBox it: bList) {
 			Point3D downLeft = new Point3D(it.getMin().y(), it.getMin().x());
 			Point3D downRight = new Point3D(it.getMax().y(), it.getMin().x());
@@ -94,11 +87,115 @@ public class AlgoBoxes {
 				outerPoint.add(upRight);
 			}
 		}
+
 		for (Point3D it: outerPoint) {
 			Pixel temp = map.Point2Pixel(it.y(), it.x());
-			outerPixel.add(temp);
+			outerPixel.add(new Point3D(temp.getX(), temp.getY()));
 		}
 
+
+		Robot.Fruit closestFruit = closetFruit(game);
+		double fruitDis = game.getPlayer().getLocation().distance2D(closestFruit.getLocation());
+
+		if(closestFruit != null) {
+			while(!(game.getPlayer().getLocation().equalsXY(closestFruit.getLocation()))) {
+
+
+			}
+		}
+
+	}
+
+
+	public void test(Point3D a, Point3D b) {
+
+		int size = outerPixel.size();
+		//		double[] xx = {38,88,88,356,356,60,60,310,310,120,164,277,422,277,422,238};
+		//		double[] yy = {131,50,102,50,102,218,254,254,218,275,275,125,125,192,192,191};
+		//		Point3D[] pp = new Point3D[size]; // like outerPixel
+		//		for(int i=0;i<size;i++) {
+		//			pp[i] = new Point3D(xx[i], yy[i]);
+		//		}
+
+		Graph G = new Graph(); 
+		String source = "a"; //the player.
+		String target = "b"; //Closest fruit.
+		G.add(new Node(source)); // Node "a" (0)
+		for(int i = 1 ; i < size+1 ; i++) {
+			Node d = new Node("" + i);
+			G.add(d);
+		}
+		G.add(new Node(target)); // Node "b" (15)
+
+		ArrayList<Point3D> see = new ArrayList<Point3D>();
+		
+		see = this.SeePoints(a);
+		for (int i = 0; i < see.size(); i++) {
+			String s = "" +(i+1);
+			if (see.get(i) != null)
+				G.addEdge("a", s, a.distance2D(outerPixel.get(i)));
+		}
+
+		for (int i = 0; i < outerPixel.size(); i++) {
+			see = this.SeePoints(outerPixel.get(i));
+			for (int j = 0; j < see.size(); j++) {
+				String s = "" +(j+1);
+				String s2 = "" +(i+1);
+				if ((see.get(j) != null) && (j != i))
+					G.addEdge(s2, s, outerPixel.get(i).distance2D(outerPixel.get(j)));
+			}
+		}
+		
+		see = this.SeePoints(b);
+		for (int i = 0; i < see.size(); i++) {
+			String s = "" +(i+1);
+			if (see.get(i) != null)
+				G.addEdge("b", s, b.distance2D(outerPixel.get(i)));
+		}
+//
+//		G.addEdge("a","1",pp[0].distance2D(pp[1]));
+//		G.addEdge("a","2",pp[0].distance2D(pp[2]));
+//		G.addEdge("a","5",pp[0].distance2D(pp[5]));
+//		G.addEdge("a","6",pp[0].distance2D(pp[6]));
+//
+//		G.addEdge("1","2",pp[1].distance2D(pp[2]));
+//		G.addEdge("1","3",pp[1].distance2D(pp[3]));
+//		G.addEdge("3","4",pp[3].distance2D(pp[4]));
+//
+//		G.addEdge("5","6",pp[5].distance2D(pp[6]));
+//
+//		G.addEdge("9","10",pp[9].distance2D(pp[10]));
+//		G.addEdge("6","9",pp[6].distance2D(pp[9]));
+//		G.addEdge("7","10",pp[7].distance2D(pp[10]));
+//
+//		G.addEdge("7","8",pp[7].distance2D(pp[8]));
+//		G.addEdge("8","13",pp[8].distance2D(pp[13]));
+//		G.addEdge("8","14",pp[8].distance2D(pp[14]));
+//
+//		G.addEdge("11","12",pp[11].distance2D(pp[12]));
+//		G.addEdge("11","13",pp[11].distance2D(pp[13]));
+//		G.addEdge("12","14",pp[12].distance2D(pp[14]));
+//		G.addEdge("13","14",pp[13].distance2D(pp[14]));
+//
+//		G.addEdge("4","11",pp[4].distance2D(pp[11]));
+//		G.addEdge("4","12",pp[4].distance2D(pp[12]));
+//		G.addEdge("3","12",pp[3].distance2D(pp[12]));
+//
+//		G.addEdge("8","b",pp[8].distance2D(pp[15]));
+//		G.addEdge("13","b",pp[13].distance2D(pp[15]));
+//		G.addEdge("11","b",pp[11].distance2D(pp[15]));
+
+		// This is the main call for computing all the shortest path from node 0 ("a")
+		Graph_Algo.dijkstra(G, source);
+
+		Node b1 = G.getNodeByName(target);
+		System.out.println("***** Graph Demo for OOP_Ex4 *****");
+		System.out.println(b);
+		System.out.println("Dist: "+b1.getDist());
+		ArrayList<String> shortestPath = b1.getPath();
+		for(int i=0; i < shortestPath.size(); i++) {
+			System.out.print(","+shortestPath.get(i));
+		}
 	}
 
 	/**
@@ -132,7 +229,7 @@ public class AlgoBoxes {
 	 * @param boxes an Array List of all the boxes in the game.
 	 * @return true if the point is in one of the boxes and false otherwise.
 	 */
-	public boolean PointIn (Point3D p, GeoBox b, ArrayList<GeoBox> boxes) {
+	public boolean PointIn(Point3D p, GeoBox b, ArrayList<GeoBox> boxes) {
 
 		for (GeoBox it: boxes) {
 			Point3D downLeft = new Point3D(it.getMin().y(), it.getMin().x());
@@ -182,7 +279,10 @@ public class AlgoBoxes {
 		return closetPacman;
 	}
 
-	public ArrayList<Point3D> SeePoints (Point3D a) {
+	/*
+	 * 
+	 */
+	public ArrayList<Point3D> SeePoints(Point3D a) {
 
 		ArrayList<Point3D> ans = new ArrayList<Point3D>();
 		boolean inter = false;
@@ -198,6 +298,8 @@ public class AlgoBoxes {
 				}
 				if (!inter)
 					ans.add(b);
+				else
+					ans.add(null);
 			}
 		}
 		return ans;
