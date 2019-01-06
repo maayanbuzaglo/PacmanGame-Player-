@@ -1,5 +1,6 @@
 package Pacman_game;
 
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import Coords.Coords;
 import Coords.GeoBox;
@@ -13,19 +14,38 @@ public class AlgoBoxes {
 	public ArrayList<Point3D> outerPoint; //list of coordinate of the relevant corners.
 	public ArrayList<Pixel> outerPixel; //list of Pixel of the relevant corners.
 	public Robot.Game game; //a game.
+	public ArrayList<Line2D> cornersLine;
 
 	public AlgoBoxes() {
 
 		bList = new ArrayList<GeoBox>();
 		outerPoint = new ArrayList<Point3D>();
-		this.game = new Game();
+		cornersLine = new ArrayList<Line2D>();
+		this.game = new Game();		
 	}
 
 	public AlgoBoxes(Game game) {
 
-		bList = new ArrayList<GeoBox>();
 		outerPoint = new ArrayList<Point3D>();
 		this.game = game;
+		for (int i = 0; i < game.sizeB(); i++) {
+			bList.add(game.getBox(i));
+		}
+		for (GeoBox it: bList) {
+			Point3D downLeft = new Point3D(it.getMin().y(), it.getMin().x());
+			Point3D downRight = new Point3D(it.getMax().y(), it.getMin().x());
+			Point3D upLeft = new Point3D(it.getMin().y(), it.getMax().x());
+			Point3D upRight = new Point3D(it.getMax().y(), it.getMax().x());
+			Line2D temp = new Line2D();
+			temp.setLine(it.getMin().y(), it.getMin().x(), it.getMax().y(), it.getMin().x()); // The line - down left-down right.
+			cornersLine.add(temp);
+			temp.setLine(it.getMin().y(), it.getMin().x(), it.getMin().y(), it.getMax().x()); // The line - down left-up left.
+			cornersLine.add(temp);
+			temp.setLine(it.getMin().y(), it.getMax().x(), it.getMax().y(), it.getMax().x()); // The line - up left-up right.
+			cornersLine.add(temp);
+			temp.setLine(it.getMax().y(), it.getMin().x(), it.getMax().y(), it.getMax().x()); // The line - down right-up right.
+			cornersLine.add(temp);
+		}
 	}
 
 	public void mainAlgo(Game game) {
@@ -78,6 +98,7 @@ public class AlgoBoxes {
 			Pixel temp = map.Point2Pixel(it.y(), it.x());
 			outerPixel.add(temp);
 		}
+
 	}
 
 	/**
@@ -160,4 +181,54 @@ public class AlgoBoxes {
 		}
 		return closetPacman;
 	}
+
+	public ArrayList<Point3D> SeePoints (Point3D a) {
+
+		ArrayList<Point3D> ans = new ArrayList<Point3D>();
+		boolean inter = false;
+		Line2D a2b = new Line2D.Double();
+		for (Point3D b: outerPoint) {
+			inter = true;
+			a2b.setLine(a.x(), a.y(), b.x(), b.y());
+			if ((a.x() == b.x()) || (a.y() == b.y()))
+				ans.add(b);
+			else {
+				for (int i = 0; i < cornersLine.size() && !inter; i++) {
+					inter = linesCut(a2b, cornersLine.get(i));
+				}
+				if (!inter)
+					ans.add(b);
+			}
+		}
+		return ans;
+	}
+
+	public boolean linesCut(Line2D l1, Line2D l2) {
+		return l1.intersectsLine(l2);
+	}
+
+
+
+
+	//	public boolean linesCut(Line2D l1) {
+	//
+	//		boolean flage = true;
+	//		for (int i = 0; i < cornersLine.size() && flage; i++) {
+	//			flage = false;
+	//			double denom = (cornersLine.get(i).y2 - cornersLine.get(i).y1) * (l1.x2 - l1.x1) - (cornersLine.get(i).x2 - cornersLine.get(i).x1) * (l1.y2 - l1.y1);
+	//			if (denom == 0.0) { // Lines are parallel.
+	//				flage = true;
+	//			}
+	//			double ua = ((cornersLine.get(i).x2 - cornersLine.get(i).x1) * (l1.y1 - cornersLine.get(i).y1) - (cornersLine.get(i).y2 - cornersLine.get(i).y1) * (l1.x1 - cornersLine.get(i).x1)) / denom;
+	//			double ub = ((l1.x2 - l1.x1) * (l1.y1 - cornersLine.get(i).y1) - (l1.y2 - l1.y1) * (l1.x1 - cornersLine.get(i).x1)) / denom;
+	//			if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
+	//				// Get the intersection point.
+	//				return false;
+	//			}
+	//		}
+	//		if (flage)
+	//			return true;
+	//		else
+	//			return false;
+	//	}
 }
