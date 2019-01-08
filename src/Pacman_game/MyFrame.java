@@ -54,9 +54,12 @@ public class MyFrame extends JFrame implements MouseListener {
 	public ArrayList<Pixel> boxPixel4; //boxes pixels list for point 4.
 	public int countPacman; //pacman id.
 	public int countFruit; //fruit id.
+	public Algorithm algo;
+
 	private boolean PlayerOn = false; //if true - draws player. else - nothing.
 	private boolean AzimuthOn = false; //if true - the player moves to mouse click.
 	private boolean ReadGameOn = false; //if true - draws player. else - need to read game.
+
 
 	/*
 	 * An empty constructor.
@@ -84,6 +87,7 @@ public class MyFrame extends JFrame implements MouseListener {
 		countPacman = 0;
 		countFruit = 0;
 		PlayerOn = false;
+		algo = new Algorithm();
 
 		initGUI();		
 		this.addMouseListener(this);
@@ -108,6 +112,8 @@ public class MyFrame extends JFrame implements MouseListener {
 		boxPixel3 = new ArrayList<Pixel>();
 		boxPixel4 = new ArrayList<Pixel>();
 		PlayerOn = false;
+		System.out.println("_FRAM______"+game.sizeB());
+		algo = new Algorithm(game);
 		//gets the boxes in the game.
 		for (int i = 0; i < game.sizeB(); i++) {
 			bList.add(game.getBox(i));
@@ -127,7 +133,7 @@ public class MyFrame extends JFrame implements MouseListener {
 		//		add(grafic);
 
 		MenuBar menuBar = new MenuBar();
-		Menu game = new Menu("Game"); //Game - Read game, Control run, Automatic run.
+		Menu gameOn = new Menu("Game"); //Game - Read game, Control run, Automatic run.
 		MenuItem readCSV = new MenuItem("Read game");
 		MenuItem contRun = new MenuItem("Control run");
 		MenuItem autoRun=new MenuItem("Automatic run");
@@ -136,10 +142,10 @@ public class MyFrame extends JFrame implements MouseListener {
 		MenuItem stop = new MenuItem("Stop");
 		MenuItem clear = new MenuItem("Clear");
 
-		menuBar.add(game);
-		game.add(readCSV);
-		game.add(contRun);
-		game.add(autoRun);
+		menuBar.add(gameOn);
+		gameOn.add(readCSV);
+		gameOn.add(contRun);
+		gameOn.add(autoRun);
 
 		menuBar.add(options);
 		options.add(stop);
@@ -206,6 +212,7 @@ public class MyFrame extends JFrame implements MouseListener {
 					else if(board_data.get(i).charAt(0) == 'F') {
 						Robot.Fruit fruit = new Robot.Fruit(board_data.get(i));
 						fList.add(fruit);
+						game.add(fruit);
 
 						Pixel f = new Pixel(map.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
 						fruitPixel.add(f);
@@ -215,6 +222,7 @@ public class MyFrame extends JFrame implements MouseListener {
 					else if(board_data.get(i).charAt(0) == 'G') {
 						Robot.Packman ghost = new Robot.Packman(board_data.get(i));
 						gList.add(ghost);
+						game.addGhost(ghost);
 
 						Pixel g = new Pixel(map.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
 						ghostPixel.add(g);
@@ -224,6 +232,7 @@ public class MyFrame extends JFrame implements MouseListener {
 					else if(board_data.get(i).charAt(0) == 'B') {
 						GeoBox box = new GeoBox(board_data.get(i));
 						bList.add(box);
+						game.add(box);
 
 						Pixel downLeft = new Pixel(map.Point2Pixel(box.getMin().y(), box.getMin().x()));
 						boxPixel1.add(downLeft);
@@ -288,7 +297,7 @@ public class MyFrame extends JFrame implements MouseListener {
 				}
 			}
 		});
-		
+
 		autoRun.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -326,10 +335,14 @@ public class MyFrame extends JFrame implements MouseListener {
 						repaint();
 						PlayerOn = false;
 						AzimuthOn = false;
-						
+
+
 						Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player)); //finds the closet fruit.
 						//computes the azimuth the player should go to eat the closet fruit.
-						azimuth(player.getLocation().x(), player.getLocation().y(), fList.get(0).getLocation().x(), closetFruit.getLocation().y());
+
+						algo.test(player.getLocation(), closetFruit.getLocation(), game);
+						azimuth(player.getLocation().x(), player.getLocation().y(), algo.shortPath.get(0).x(), algo.shortPath.get(0).y());
+
 
 						ThreadT2 S = new ThreadT2();
 						S.start();
@@ -464,7 +477,7 @@ public class MyFrame extends JFrame implements MouseListener {
 	}
 
 	//	public class MyPanel extends JPanel { //for clear moves.
-	
+
 	/*
 	 * This function paints pacmans, fruits, ghosts and boxes on the game frame.
 	 * @see java.awt.Window#paint(java.awt.Graphics).
@@ -634,75 +647,79 @@ public class MyFrame extends JFrame implements MouseListener {
 					play.stop();
 				}
 				else {
-					
+
 					Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player)); //finds the closet fruit.
 					//computes the azimuth the player should go to eat the closet fruit.
-					azimuth(player.getLocation().x(), player.getLocation().y(), closetFruit.getLocation().x(), closetFruit.getLocation().y());
 
-					play.rotate(azi); 	
+					algo.test(player.getLocation(), closetFruit.getLocation(), game);
+					for (Point3D it: algo.shortPath) {
+						azimuth(player.getLocation().x(), player.getLocation().y(), it.x(), it.y());
 
-					System.out.println("***** Step " + i + " *****");
+						play.rotate(azi); 	
 
-					//getS the current score of the game.
-					String info = play.getStatistics();
-					System.out.println(info);
+						System.out.println("***** Step " + i + " *****");
 
-					//getS the game-board current state.
-					ArrayList<String> board_data = play.getBoard();
+						//getS the current score of the game.
+						String info = play.getStatistics();
+						System.out.println(info);
 
-					//clears all before read a new game (except the boxes).
-					pList.clear();
-					fList.clear();
-					gList.clear();
-					player = null;
-					playerPixel = null;
-					pacmanPixel.clear();
-					fruitPixel.clear();
-					ghostPixel.clear();
+						//getS the game-board current state.
+						ArrayList<String> board_data = play.getBoard();
 
-					for(int i1 = 0; i1 < board_data.size(); i1++) {
+						//clears all before read a new game (except the boxes).
+						pList.clear();
+						fList.clear();
+						gList.clear();
+						player = null;
+						playerPixel = null;
+						pacmanPixel.clear();
+						fruitPixel.clear();
+						ghostPixel.clear();
 
-						//updates the player data.
-						if(board_data.get(i1).charAt(0) == 'M') {
-							player = new Robot.Packman(board_data.get(i1));
+						for(int i1 = 0; i1 < board_data.size(); i1++) {
 
-							playerPixel = new Pixel(map.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
+							//updates the player data.
+							if(board_data.get(i1).charAt(0) == 'M') {
+								player = new Robot.Packman(board_data.get(i1));
+
+								playerPixel = new Pixel(map.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
+							}
+
+							//adds all the pacmans in the game to pacman list in this game.
+							else if(board_data.get(i1).charAt(0) == 'P') {
+								Robot.Packman pacman = new Robot.Packman(board_data.get(i1));
+								pList.add(pacman);
+
+								Pixel p = new Pixel(map.Point2Pixel(pacman.getLocation().y(), pacman.getLocation().x()));
+								pacmanPixel.add(p);
+							}
+
+							//adds all the fruits in the game to fruit list in this game.
+							else if(board_data.get(i1).charAt(0) == 'F') {
+								Robot.Fruit fruit = new Robot.Fruit(board_data.get(i1));
+								fList.add(fruit);
+
+								Pixel f = new Pixel(map.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
+								fruitPixel.add(f);
+							}
+
+							//adds all the ghosts in the game to ghost list in this game.
+							else if(board_data.get(i1).charAt(0) == 'G') {
+								Robot.Packman ghost = new Robot.Packman(board_data.get(i1));
+								gList.add(ghost);
+
+								Pixel g = new Pixel(map.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
+								ghostPixel.add(g);
+							}
 						}
-
-						//adds all the pacmans in the game to pacman list in this game.
-						else if(board_data.get(i1).charAt(0) == 'P') {
-							Robot.Packman pacman = new Robot.Packman(board_data.get(i1));
-							pList.add(pacman);
-
-							Pixel p = new Pixel(map.Point2Pixel(pacman.getLocation().y(), pacman.getLocation().x()));
-							pacmanPixel.add(p);
+						repaint();
+						try {
+							Thread.sleep(200);
 						}
+						catch (InterruptedException e) {
 
-						//adds all the fruits in the game to fruit list in this game.
-						else if(board_data.get(i1).charAt(0) == 'F') {
-							Robot.Fruit fruit = new Robot.Fruit(board_data.get(i1));
-							fList.add(fruit);
-
-							Pixel f = new Pixel(map.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
-							fruitPixel.add(f);
+							e.printStackTrace();
 						}
-
-						//adds all the ghosts in the game to ghost list in this game.
-						else if(board_data.get(i1).charAt(0) == 'G') {
-							Robot.Packman ghost = new Robot.Packman(board_data.get(i1));
-							gList.add(ghost);
-
-							Pixel g = new Pixel(map.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
-							ghostPixel.add(g);
-						}
-					}
-					repaint();
-					try {
-						Thread.sleep(200);
-					}
-					catch (InterruptedException e) {
-
-						e.printStackTrace();
 					}
 				}
 			}

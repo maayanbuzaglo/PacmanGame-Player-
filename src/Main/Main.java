@@ -10,6 +10,7 @@ import Geom.Point3D;
 import Pacman_game.Map;
 import Pacman_game.MyFrame;
 import Pacman_game.Pixel;
+import Robot.Game;
 
 /*
  * Main class.
@@ -17,7 +18,7 @@ import Pacman_game.Pixel;
 public class Main {
 
 	public static void main(String[] args) throws IOException {
-			
+		
 		MyFrame window = new MyFrame();
 		window.setTitle("Pacman Game");
 		BufferedImage image = ImageIO.read(new File("pacman.png"));
