@@ -1,10 +1,8 @@
 package Pacman_game;
 
 import java.awt.geom.Line2D;
+import java.io.IOException;
 import java.util.ArrayList;
-
-import com.mysql.fabric.xmlrpc.base.Array;
-
 import Coords.Coords;
 import Coords.GeoBox;
 import Geom.Point3D;
@@ -25,19 +23,28 @@ public class AlgoBoxes {
 	/*
 	 * An empty constructor.
 	 */
-	public AlgoBoxes() {
-
+	public AlgoBoxes() throws IOException {
+		
+		map = new Map();
 		bList = new ArrayList<GeoBox>(); //list of boxes.
 		outerPoint = new ArrayList<Point3D>(); //list of coordinates of the relevant corners.
 		cornersLine = new ArrayList<Line2D>(); //lists of all the lines in the path to the target.
 		this.game = new Game(); //a game.
-	}
+	} 
 
-	/*
-	 * The main algorithm of this class.
-	 */
-	public void mainAlgo(Game game) {
+	public AlgoBoxes(Game game) throws IOException {
 
+		map = new Map();
+		bList = new ArrayList<GeoBox>(); //list of boxes.
+		outerPoint = new ArrayList<Point3D>(); //list of coordinates of the relevant corners.
+		cornersLine = new ArrayList<Line2D>(); //lists of all the lines in the path to the target.
+		this.game = new Game(game); //a game.
+		outerPixel = new ArrayList<Point3D>();
+//		for (Point3D it: outerPixel) {
+//			Pixel t = new Pixel(it.x(), it.y());
+//			Point3D temp = map.Pixel2Point(t);
+//			outerPoint.add(temp);
+//		}
 		for (int i = 0; i < game.sizeB(); i++) {
 			bList.add(game.getBox(i));
 		}
@@ -53,6 +60,13 @@ public class AlgoBoxes {
 			temp.setLine(it.getMax().y(), it.getMin().x(), it.getMax().y(), it.getMax().x()); //the line - down right-up right.
 			cornersLine.add(temp);
 		}
+		this.mainAlgo();
+	}
+	
+	/*
+	 * The main algorithm of this class.
+	 */
+	public void mainAlgo() {
 
 		//filters all the relevant corners.
 		boolean isIn = false;
@@ -94,45 +108,41 @@ public class AlgoBoxes {
 		}
 
 
-		Robot.Fruit closestFruit = closetFruit(game);
-		double fruitDis = game.getPlayer().getLocation().distance2D(closestFruit.getLocation());
-
-		if(closestFruit != null) {
-			while(!(game.getPlayer().getLocation().equalsXY(closestFruit.getLocation()))) {
-
-
-			}
-		}
+//		Robot.Fruit closestFruit = closetFruit(game);
+//		double fruitDis = game.getPlayer().getLocation().distance2D(closestFruit.getLocation());
+//
+//		if(closestFruit != null) {
+//			while(!(game.getPlayer().getLocation().equalsXY(closestFruit.getLocation()))) {
+//
+//
+//			}
+//		}
 
 	}
-
 
 	public void test(Point3D a, Point3D b) {
 
 		int size = outerPixel.size();
-		//		double[] xx = {38,88,88,356,356,60,60,310,310,120,164,277,422,277,422,238};
-		//		double[] yy = {131,50,102,50,102,218,254,254,218,275,275,125,125,192,192,191};
-		//		Point3D[] pp = new Point3D[size]; // like outerPixel
-		//		for(int i=0;i<size;i++) {
-		//			pp[i] = new Point3D(xx[i], yy[i]);
-		//		}
 
 		Graph G = new Graph(); 
 		String source = "a"; //the player.
 		String target = "b"; //Closest fruit.
 		G.add(new Node(source)); // Node "a" (0)
-		for(int i = 1 ; i < size+1 ; i++) {
+		for(int i = 1 ; i < size + 1 ; i++) {
 			Node d = new Node("" + i);
 			G.add(d);
 		}
+		
 		G.add(new Node(target)); // Node "b" (15)
 
 		ArrayList<Point3D> see = new ArrayList<Point3D>();
-		
-		see = this.SeePoints(a);
+
+		Point3D a1 = map.Pixel2Point(new Pixel(a.x(), a.y()));
+		see = this.SeePoints(a1);
+		System.out.println("--"+see);
 		for (int i = 0; i < see.size(); i++) {
 			String s = "" +(i+1);
-			if (see.get(i) != null)
+//			if (see.get(i) != null)
 				G.addEdge("a", s, a.distance2D(outerPixel.get(i)));
 		}
 
@@ -141,55 +151,25 @@ public class AlgoBoxes {
 			for (int j = 0; j < see.size(); j++) {
 				String s = "" +(j+1);
 				String s2 = "" +(i+1);
-				if ((see.get(j) != null) && (j != i))
+//				if ((see.get(j) != null) && (j != i))
 					G.addEdge(s2, s, outerPixel.get(i).distance2D(outerPixel.get(j)));
 			}
 		}
-		
+
 		see = this.SeePoints(b);
 		for (int i = 0; i < see.size(); i++) {
 			String s = "" +(i+1);
-			if (see.get(i) != null)
+//			if (see.get(i) != null)
 				G.addEdge("b", s, b.distance2D(outerPixel.get(i)));
 		}
-//
-//		G.addEdge("a","1",pp[0].distance2D(pp[1]));
-//		G.addEdge("a","2",pp[0].distance2D(pp[2]));
-//		G.addEdge("a","5",pp[0].distance2D(pp[5]));
-//		G.addEdge("a","6",pp[0].distance2D(pp[6]));
-//
-//		G.addEdge("1","2",pp[1].distance2D(pp[2]));
-//		G.addEdge("1","3",pp[1].distance2D(pp[3]));
-//		G.addEdge("3","4",pp[3].distance2D(pp[4]));
-//
-//		G.addEdge("5","6",pp[5].distance2D(pp[6]));
-//
-//		G.addEdge("9","10",pp[9].distance2D(pp[10]));
-//		G.addEdge("6","9",pp[6].distance2D(pp[9]));
-//		G.addEdge("7","10",pp[7].distance2D(pp[10]));
-//
-//		G.addEdge("7","8",pp[7].distance2D(pp[8]));
-//		G.addEdge("8","13",pp[8].distance2D(pp[13]));
-//		G.addEdge("8","14",pp[8].distance2D(pp[14]));
-//
-//		G.addEdge("11","12",pp[11].distance2D(pp[12]));
-//		G.addEdge("11","13",pp[11].distance2D(pp[13]));
-//		G.addEdge("12","14",pp[12].distance2D(pp[14]));
-//		G.addEdge("13","14",pp[13].distance2D(pp[14]));
-//
-//		G.addEdge("4","11",pp[4].distance2D(pp[11]));
-//		G.addEdge("4","12",pp[4].distance2D(pp[12]));
-//		G.addEdge("3","12",pp[3].distance2D(pp[12]));
-//
-//		G.addEdge("8","b",pp[8].distance2D(pp[15]));
-//		G.addEdge("13","b",pp[13].distance2D(pp[15]));
-//		G.addEdge("11","b",pp[11].distance2D(pp[15]));
 
 		// This is the main call for computing all the shortest path from node 0 ("a")
-		Graph_Algo.dijkstra(G, source);
+        //Graph_Algo.dijkstra(G, source);
+		double n = Graph_Algo.dijkstra(G, source);
+		System.out.println(n);
 
 		Node b1 = G.getNodeByName(target);
-		System.out.println("***** Graph Demo for OOP_Ex4 *****");
+		System.out.println("** Graph Demo for OOP_Ex4 **");
 		System.out.println(b);
 		System.out.println("Dist: "+b1.getDist());
 		ArrayList<String> shortestPath = b1.getPath();
@@ -288,7 +268,7 @@ public class AlgoBoxes {
 		boolean inter = false;
 		Line2D a2b = new Line2D.Double();
 		for (Point3D b: outerPoint) {
-			inter = true;
+			inter = false;
 			a2b.setLine(a.x(), a.y(), b.x(), b.y());
 			if ((a.x() == b.x()) || (a.y() == b.y()))
 				ans.add(b);
@@ -309,28 +289,23 @@ public class AlgoBoxes {
 		return l1.intersectsLine(l2);
 	}
 
+	public static void main(String[] args) throws IOException {
+		double[] xx = {88,88,356,356,60,60,310,310,120,164,277,422,277,422};
+		double[] yy = {50,102,50,102,218,254,254,218,275,275,125,125,192,192};
+		int size = xx.length;
+		ArrayList<Point3D> pp = new ArrayList<Point3D>(); // like outerPixel
+		for(int i=0;i<size;i++) {
+			pp.add(new Point3D(xx[i], yy[i]));
+		}
+		Map m = new Map();
+		Game g = new Game("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example4.csv");
+		AlgoBoxes algo = new AlgoBoxes(g);
+		Pixel a1 = m.Point2Pixel(g.getPackman(0).getLocation().y(),g.getPackman(0).getLocation().x());
+		Pixel b1 = m.Point2Pixel(g.getTarget(0).getLocation().y(),g.getTarget(0).getLocation().x());
 
+		Point3D a =  new Point3D(new Point3D(a1.getX(), a1.getY()));
+		Point3D b =  new Point3D(new Point3D(b1.getX(), b1.getY()));
+		algo.test(a, b);
+	}
 
-
-	//	public boolean linesCut(Line2D l1) {
-	//
-	//		boolean flage = true;
-	//		for (int i = 0; i < cornersLine.size() && flage; i++) {
-	//			flage = false;
-	//			double denom = (cornersLine.get(i).y2 - cornersLine.get(i).y1) * (l1.x2 - l1.x1) - (cornersLine.get(i).x2 - cornersLine.get(i).x1) * (l1.y2 - l1.y1);
-	//			if (denom == 0.0) { // Lines are parallel.
-	//				flage = true;
-	//			}
-	//			double ua = ((cornersLine.get(i).x2 - cornersLine.get(i).x1) * (l1.y1 - cornersLine.get(i).y1) - (cornersLine.get(i).y2 - cornersLine.get(i).y1) * (l1.x1 - cornersLine.get(i).x1)) / denom;
-	//			double ub = ((l1.x2 - l1.x1) * (l1.y1 - cornersLine.get(i).y1) - (l1.y2 - l1.y1) * (l1.x1 - cornersLine.get(i).x1)) / denom;
-	//			if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
-	//				// Get the intersection point.
-	//				return false;
-	//			}
-	//		}
-	//		if (flage)
-	//			return true;
-	//		else
-	//			return false;
-	//	}
 }

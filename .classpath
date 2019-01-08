@@ -19,6 +19,6 @@
 	<classpathentry kind="lib" path="JARS/postgresql-database-1.7.0.jar"/>
 	<classpathentry kind="lib" path="JARS/mysql-connector-java-5.1.47.jar"/>
 	<classpathentry kind="lib" path="src/Ex4_v0.2.jar"/>
-	<classpathentry kind="lib" path="/Graph_101/Graph_v0.11.jar"/>
+	<classpathentry kind="lib" path="JARS/Graph_v0.11.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
