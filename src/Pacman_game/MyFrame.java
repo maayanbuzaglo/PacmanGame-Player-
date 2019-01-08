@@ -1,4 +1,4 @@
-package Ex4;
+package Pacman_game;
 
 import java.awt.Graphics;
 import java.awt.Menu;
@@ -20,9 +20,7 @@ import javax.swing.JFrame;
 import Coords.GeoBox;
 import Coords.LatLonAlt;
 import Geom.Point3D;
-import Pacman_game.AlgoBoxes;
-import Pacman_game.Map;
-import Pacman_game.Pixel;
+import Robot.Fruit;
 import Robot.Game;
 import Robot.Packman;
 import Robot.Play;
@@ -314,6 +312,7 @@ public class MyFrame extends JFrame implements MouseListener {
 						System.out.println("You must place the player.");
 					}
 					else {
+						
 						play.setInitLocation(player.getLocation().x() , player.getLocation().y()); //sets the "player" init location.
 
 						//starts the "server".
@@ -340,7 +339,9 @@ public class MyFrame extends JFrame implements MouseListener {
 						//						System.out.println("======"+pl.x());
 						//						System.out.println("======"+fr.x());
 
-						azimuth(player.getLocation().x(), player.getLocation().y(), fList.get(0).getLocation().x(), fList.get(0).getLocation().y());
+						Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player));
+						System.out.println(closetFruit);
+						azimuth(player.getLocation().x(), player.getLocation().y(), fList.get(0).getLocation().x(), closetFruit.getLocation().y());
 
 						System.out.println(azi);
 						ThreadT2 S = new ThreadT2(); //slow moves.
@@ -647,10 +648,12 @@ public class MyFrame extends JFrame implements MouseListener {
 				i++;
 
 				System.out.println(azi);
-				//				while(!fList.isEmpty()) {
+				//while(!fList.isEmpty()) {
 				//This is the main command to the player (on the server side).
-				//				if(player.getLocation().equalsXY(fList.get(0).getLocation())) {
-				azimuth(player.getLocation().x(), player.getLocation().y(), fList.get(0).getLocation().x(), fList.get(0).getLocation().y());
+				//if(player.getLocation().equalsXY(fList.get(0).getLocation())) {
+				Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player));
+				System.out.println(closetFruit);
+				azimuth(player.getLocation().x(), player.getLocation().y(), closetFruit.getLocation().x(), closetFruit.getLocation().y());
 				//				}
 
 				play.rotate(azi); 	

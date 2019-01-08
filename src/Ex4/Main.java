@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 
 import Geom.Point3D;
 import Pacman_game.Map;
+import Pacman_game.MyFrame;
 import Pacman_game.Pixel;
 
 /*

@@ -11,7 +11,7 @@ import graph.Graph;
 import graph.Graph_Algo;
 import graph.Node;
 
-public class AlgoBoxes {
+public class Algorithm {
 
 	public Map map;
 	public ArrayList<GeoBox> bList; //list of boxes.
@@ -23,7 +23,7 @@ public class AlgoBoxes {
 	/*
 	 * An empty constructor.
 	 */
-	public AlgoBoxes() throws IOException {
+	public Algorithm() throws IOException {
 		
 		map = new Map();
 		bList = new ArrayList<GeoBox>(); //list of boxes.
@@ -32,7 +32,7 @@ public class AlgoBoxes {
 		this.game = new Game(); //a game.
 	} 
 
-	public AlgoBoxes(Game game) throws IOException {
+	public Algorithm(Game game) throws IOException {
 
 		map = new Map();
 		bList = new ArrayList<GeoBox>(); //list of boxes.
@@ -228,12 +228,12 @@ public class AlgoBoxes {
 	/*
 	 * This function checks what fruit is closest to the player.
 	 */
-	public Robot.Fruit closetFruit(Game game) {
+	public static Robot.Fruit closetFruit(ArrayList<Robot.Fruit> fruits, Robot.Packman player) {
 
-		Robot.Fruit closetFruit = game.getTarget(0);
-		double minDistance = game.getPlayer().getLocation().distance2D(game.getTarget(0).getLocation());
-		for(Robot.Fruit it: game.getTargets()) {
-			double tempDistance = game.getPlayer().getLocation().distance2D(it.getLocation());
+		Robot.Fruit closetFruit = fruits.get(0);
+		double minDistance = player.getLocation().distance2D(fruits.get(0).getLocation());
+		for(Robot.Fruit it: fruits) {
+			double tempDistance = player.getLocation().distance2D(it.getLocation());
 			if(minDistance > tempDistance) {
 				minDistance = tempDistance;
 				closetFruit = it;
@@ -299,7 +299,7 @@ public class AlgoBoxes {
 		}
 		Map m = new Map();
 		Game g = new Game("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example4.csv");
-		AlgoBoxes algo = new AlgoBoxes(g);
+		Algorithm algo = new Algorithm(g);
 		Pixel a1 = m.Point2Pixel(g.getPackman(0).getLocation().y(),g.getPackman(0).getLocation().x());
 		Pixel b1 = m.Point2Pixel(g.getTarget(0).getLocation().y(),g.getTarget(0).getLocation().x());
 
