@@ -61,15 +61,35 @@ public class Algorithm {
 		for (GeoBox it: bList) {
 
 			Line2D temp = new Line2D.Double();
-			temp.setLine(it.getMin().y(), it.getMin().x(), it.getMax().y(), it.getMin().x()); //the line - down left-down right.
+			GeoBox box = new GeoBox(it);
+			Pixel downLeft = new Pixel(map.Point2Pixel(box.getMin().y(), box.getMin().x()));
+			Pixel upLeft = new Pixel(map.Point2Pixel(box.getMin().y(), box.getMax().x()));
+			Pixel upRight = new Pixel(map.Point2Pixel(box.getMax().y(), box.getMax().x()));
+			Pixel downRight = new Pixel(map.Point2Pixel(box.getMax().y(), box.getMin().x()));
+			
+			
+			Point3D DL = map.Pixel2Point(downLeft);
+			Point3D DR = map.Pixel2Point(downRight);
+			Point3D UL = map.Pixel2Point(upLeft);
+			Point3D UR = map.Pixel2Point(upRight);
+
+			temp.setLine(DL.x(), DL.y(), DR.x(), DR.y()); //the line - down left-down right.
 			cornersLine.add(temp);
-			temp.setLine(it.getMin().y(), it.getMin().x(), it.getMin().y(), it.getMax().x()); //the line - down left-up left.
+		
+			
+			temp.setLine(DL.x(), DL.y(), UL.x(), UL.y()); //the line - down left-up left.
 			cornersLine.add(temp);
-			temp.setLine(it.getMin().y(), it.getMax().x(), it.getMax().y(), it.getMax().x()); //the line - up left-up right.
+		
+			
+			temp.setLine(UL.x(), UL.y(), UR.x(), UR.y()); //the line - up left-up right.
 			cornersLine.add(temp);
-			temp.setLine(it.getMax().y(), it.getMin().x(), it.getMax().y(), it.getMax().x()); //the line - down right-up right.
+			
+			
+			temp.setLine(DR.x(), DR.y(), UR.x(), UR.y()); //the line - down right-up right.
 			cornersLine.add(temp);
+			
 		}
+		
 		//filters all the relevant corners.
 		boolean isIn = false;
 
@@ -114,6 +134,12 @@ public class Algorithm {
 
 	public void test(Point3D a, Point3D b, Game game) {
 
+		outerPixel.clear();
+		outerPoint.clear();
+		bList.clear();
+		cornersLine.clear();
+		shortPath.clear();
+		
 		this.game = new Game(game);
 		this.mainAlgo();
 
@@ -132,26 +158,21 @@ public class Algorithm {
 
 		ArrayList<Pixel> see = new ArrayList<Pixel>();
 
-		Pixel a1 = new Pixel(a.x(), a.y());
+		Pixel a1 = map.Point2Pixel(a.x(), a.y());
 		
-		for (Pixel it: outerPixel) {
-		boolean ans = DidISeehim(a1, it);
-		if (ans)
-			see.add(it);
-		}
-		
-		System.out.println("outerPixel "+outerPixel);
-		System.out.println("outerPoint "+outerPoint);
-		System.out.println("Box0 "+game.getBox(0));
+//		for (Pixel it: outerPixel) {
+//		boolean ans = DidISeehim(a1, it);
+//		if (ans)
+//			see.add(it);
+//		}
 
 		
-//		see = this.SeePoints(a1);
-		System.out.println("seeeeeeeeeeeeeeeeeeeeeeeeeeee");
-		System.out.println(map.Pixel2Point(a1));
-		System.out.println(see.equals(outerPixel));
+		see = this.SeePoints(a1);
+		
 		for (int i = 0; i < see.size(); i++) {
 			String s = "" +(i+1);
-			G.addEdge("a", s, a.distance2D(new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())));
+			System.out.println(i);
+			G.addEdge("a", s, a.distance2D(outerPoint.get(i)));
 		}
 
 		for (int i = 0; i < outerPixel.size(); i++) {
@@ -159,15 +180,16 @@ public class Algorithm {
 			for (int j = 0; j < see.size(); j++) {
 				String s = "" +(j+1);
 				String s2 = "" +(i+1);
-				G.addEdge(s2, s, (new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())).distance2D(new Point3D(outerPixel.get(j).getX(), outerPixel.get(j).getY())));
+				G.addEdge(s2, s, outerPoint.get(i).distance2D(outerPoint.get(j)));
 			}
 		}
 
-		Pixel b1 = new Pixel(b.x(), b.y());
+		Pixel b1 = map.Point2Pixel(b.x(), b.y());
+		
 		see = this.SeePoints(b1);
-		for (int i = 0; i < see.size(); i++) {
+		for (int i = 0; i < see.size()-1; i++) {
 			String s = "" +(i+1);
-			G.addEdge("b", s, b.distance2D(new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())));
+			G.addEdge("b", s, b.distance2D(outerPoint.get(i)));
 		}
 
 		// This is the main call for computing all the shortest path from node 0 ("a")
@@ -180,11 +202,13 @@ public class Algorithm {
 		System.out.println(b);
 		System.out.println("Dist: " + bb.getDist());
 		ArrayList<String> shortestPath = bb.getPath();
+
 		for(int i = 1; i < shortestPath.size(); i++) {
-			System.out.print("," + shortestPath.get(i));
-			shortPath.add(outerPoint.get(Integer.parseInt(shortestPath.get(i))));
+			int index = Integer.parseInt(shortestPath.get(i));
+			shortPath.add(outerPoint.get(index));
 		}
-		System.out.println(shortPath);
+		System.out.println("Path "+shortPath);
+		
 		
 	
 	}
@@ -276,7 +300,6 @@ public class Algorithm {
 	public ArrayList<Pixel> SeePoints(Pixel a) {
 
 		ArrayList<Pixel> ans = new ArrayList<Pixel>();
-
 		for (Pixel b: outerPixel) {
 			Line2D a2b = new Line2D.Double(a.getX(),a.getY(),b.getX(),b.getY());
 			boolean flag = true ; 

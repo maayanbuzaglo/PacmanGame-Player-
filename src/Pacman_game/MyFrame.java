@@ -340,9 +340,14 @@ public class MyFrame extends JFrame implements MouseListener {
 						Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player)); //finds the closet fruit.
 						//computes the azimuth the player should go to eat the closet fruit.
 
-						algo.test(player.getLocation(), closetFruit.getLocation(), game);
-						azimuth(player.getLocation().x(), player.getLocation().y(), algo.shortPath.get(0).x(), algo.shortPath.get(0).y());
-
+						if (!bList.isEmpty()) {
+							algo.test(player.getLocation(), closetFruit.getLocation(), game);
+							azimuth(player.getLocation().x(), player.getLocation().y(), algo.shortPath.get(0).y(), algo.shortPath.get(0).x());
+						}
+						else
+						{
+							azimuth(player.getLocation().x(), player.getLocation().y(), closetFruit.getLocation().x(), closetFruit.getLocation().y());
+						}
 
 						ThreadT2 S = new ThreadT2();
 						S.start();
@@ -651,9 +656,82 @@ public class MyFrame extends JFrame implements MouseListener {
 					Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player)); //finds the closet fruit.
 					//computes the azimuth the player should go to eat the closet fruit.
 
-					algo.test(player.getLocation(), closetFruit.getLocation(), game);
-					for (Point3D it: algo.shortPath) {
-						azimuth(player.getLocation().x(), player.getLocation().y(), it.x(), it.y());
+					if (!bList.isEmpty()) {
+						algo.test(player.getLocation(), closetFruit.getLocation(), game);
+						for (Point3D it: algo.shortPath) {
+							System.out.println("it "+it);
+							azimuth(player.getLocation().x(), player.getLocation().y(), it.y(), it.x());
+
+							play.rotate(azi); 	
+
+							System.out.println("***** Step " + i + " *****");
+
+							//getS the current score of the game.
+							String info = play.getStatistics();
+							System.out.println(info);
+
+							//getS the game-board current state.
+							ArrayList<String> board_data = play.getBoard();
+
+							//clears all before read a new game (except the boxes).
+							pList.clear();
+							fList.clear();
+							gList.clear();
+							player = null;
+							playerPixel = null;
+							pacmanPixel.clear();
+							fruitPixel.clear();
+							ghostPixel.clear();
+
+							for(int i1 = 0; i1 < board_data.size(); i1++) {
+
+								//updates the player data.
+								if(board_data.get(i1).charAt(0) == 'M') {
+									player = new Robot.Packman(board_data.get(i1));
+
+									playerPixel = new Pixel(map.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
+								}
+
+								//adds all the pacmans in the game to pacman list in this game.
+								else if(board_data.get(i1).charAt(0) == 'P') {
+									Robot.Packman pacman = new Robot.Packman(board_data.get(i1));
+									pList.add(pacman);
+
+									Pixel p = new Pixel(map.Point2Pixel(pacman.getLocation().y(), pacman.getLocation().x()));
+									pacmanPixel.add(p);
+								}
+
+								//adds all the fruits in the game to fruit list in this game.
+								else if(board_data.get(i1).charAt(0) == 'F') {
+									Robot.Fruit fruit = new Robot.Fruit(board_data.get(i1));
+									fList.add(fruit);
+
+									Pixel f = new Pixel(map.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
+									fruitPixel.add(f);
+								}
+
+								//adds all the ghosts in the game to ghost list in this game.
+								else if(board_data.get(i1).charAt(0) == 'G') {
+									Robot.Packman ghost = new Robot.Packman(board_data.get(i1));
+									gList.add(ghost);
+
+									Pixel g = new Pixel(map.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
+									ghostPixel.add(g);
+								}
+							}
+							repaint();
+							try {
+								Thread.sleep(200);
+							}
+							catch (InterruptedException e) {
+
+								e.printStackTrace();
+							}
+						}
+					}
+					else
+					{
+						azimuth(player.getLocation().x(), player.getLocation().y(), closetFruit.getLocation().x(), closetFruit.getLocation().y());
 
 						play.rotate(azi); 	
 
@@ -720,6 +798,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 							e.printStackTrace();
 						}
+					
 					}
 				}
 			}
