@@ -1,4 +1,4 @@
-package Ex4;
+package Main;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

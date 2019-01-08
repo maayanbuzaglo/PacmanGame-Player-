@@ -127,10 +127,10 @@ public class MyFrame extends JFrame implements MouseListener {
 		//		add(grafic);
 
 		MenuBar menuBar = new MenuBar();
-		Menu game = new Menu("Game"); //Game - Read game, Run.
+		Menu game = new Menu("Game"); //Game - Read game, Control run, Automatic run.
 		MenuItem readCSV = new MenuItem("Read game");
-		MenuItem run = new MenuItem("Control run");
-		MenuItem autoRun=new MenuItem("Auto run");
+		MenuItem contRun = new MenuItem("Control run");
+		MenuItem autoRun=new MenuItem("Automatic run");
 
 		Menu options = new Menu("Options"); //Options - Stop, Clear.
 		MenuItem stop = new MenuItem("Stop");
@@ -138,7 +138,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		menuBar.add(game);
 		game.add(readCSV);
-		game.add(run);
+		game.add(contRun);
 		game.add(autoRun);
 
 		menuBar.add(options);
@@ -244,7 +244,7 @@ public class MyFrame extends JFrame implements MouseListener {
 		});
 
 		//listens to run key.
-		run.addActionListener(new ActionListener() {
+		contRun.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
@@ -282,12 +282,13 @@ public class MyFrame extends JFrame implements MouseListener {
 						PlayerOn = false;
 						AzimuthOn = true;
 
-						ThreadT S = new ThreadT(); //slow moves.
+						ThreadT S = new ThreadT();
 						S.start();
 					}
 				}
 			}
 		});
+		
 		autoRun.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -312,7 +313,6 @@ public class MyFrame extends JFrame implements MouseListener {
 						System.out.println("You must place the player.");
 					}
 					else {
-
 						play.setInitLocation(player.getLocation().x() , player.getLocation().y()); //sets the "player" init location.
 
 						//starts the "server".
@@ -326,29 +326,13 @@ public class MyFrame extends JFrame implements MouseListener {
 						repaint();
 						PlayerOn = false;
 						AzimuthOn = false;
-						//						while(play.isRuning())	
-						//						{
-						//							while(!fList.isEmpty()) {
-						//								azi=player.getLocation().angleZ(fList.get(0).getLocation());
-						//								System.out.println(azi);
-
-
-						//						Point3D pl = new Point3D(player.getLocation().y(), player.getLocation().x());
-						//						Point3D fr = new Point3D(fList.get(0).getLocation().y(), fList.get(0).getLocation().x());
-						//						azi = pl.north_angle(fr);
-						//						System.out.println("======"+pl.x());
-						//						System.out.println("======"+fr.x());
-
-						Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player));
-						System.out.println(closetFruit);
+						
+						Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player)); //finds the closet fruit.
+						//computes the azimuth the player should go to eat the closet fruit.
 						azimuth(player.getLocation().x(), player.getLocation().y(), fList.get(0).getLocation().x(), closetFruit.getLocation().y());
 
-						System.out.println(azi);
-						ThreadT2 S = new ThreadT2(); //slow moves.
+						ThreadT2 S = new ThreadT2();
 						S.start();
-						//							}
-						//						}
-
 					}
 				}
 			}
@@ -359,7 +343,7 @@ public class MyFrame extends JFrame implements MouseListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				play.stop();
+				play.stop(); //stop the game.
 				PlayerOn = false;
 				AzimuthOn = false;
 				repaint();
@@ -450,7 +434,7 @@ public class MyFrame extends JFrame implements MouseListener {
 			Coords.LatLonAlt point = new LatLonAlt(temp.y(), temp.x(), 0);
 			this.player = new Packman(point, 0);
 		}
-		else if(AzimuthOn){
+		else if(AzimuthOn){ //makes the pacman go the mouse click.
 			Point3D po = map.Pixel2Point(p);
 			Point3D playerPoint = map.Pixel2Point(playerPixel);
 			azi = playerPoint.north_angle(po);
@@ -479,8 +463,8 @@ public class MyFrame extends JFrame implements MouseListener {
 
 	}
 
-	//	public class MyPanel extends JPanel {
-
+	//	public class MyPanel extends JPanel { //for clear moves.
+	
 	/*
 	 * This function paints pacmans, fruits, ghosts and boxes on the game frame.
 	 * @see java.awt.Window#paint(java.awt.Graphics).
@@ -557,8 +541,7 @@ public class MyFrame extends JFrame implements MouseListener {
 			g.drawImage(ghostImage, (int)ghostPixel.get(i).getX(), (int)ghostPixel.get(i).getY(), 60, 40, this);
 		}
 	}
-	//	}
-
+	//}
 
 	public class ThreadT extends Thread {
 
@@ -651,14 +634,13 @@ public class MyFrame extends JFrame implements MouseListener {
 					play.stop();
 				}
 				else {
-					Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player));
-					System.out.println(closetFruit);
+					
+					Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player)); //finds the closet fruit.
+					//computes the azimuth the player should go to eat the closet fruit.
 					azimuth(player.getLocation().x(), player.getLocation().y(), closetFruit.getLocation().x(), closetFruit.getLocation().y());
-					//				}
 
 					play.rotate(azi); 	
 
-					//				}
 					System.out.println("***** Step " + i + " *****");
 
 					//getS the current score of the game.
@@ -727,18 +709,20 @@ public class MyFrame extends JFrame implements MouseListener {
 		}
 	}
 
-	public void azimuth(double lat1, double lon1, double lat2, double lon2){
+	/*
+	 * This function computes the azimuth between 2 coordinates.
+	 */
+	public void azimuth(double lat1, double lon1, double lat2, double lon2) {
 
 		double longitude1 = lon1;
 		double longitude2 = lon2;
 		double latitude1 = Math.toRadians(lat1);
 		double latitude2 = Math.toRadians(lat2);
-		double longDiff= Math.toRadians(longitude2-longitude1);
-		double y= Math.sin(longDiff)*Math.cos(latitude2);
-		double x=Math.cos(latitude1)*Math.sin(latitude2)-Math.sin(latitude1)*Math.cos(latitude2)*Math.cos(longDiff);
+		double longDiff = Math.toRadians(longitude2 - longitude1);
+		double y = Math.sin(longDiff) * Math.cos(latitude2);
+		double x = Math.cos(latitude1) * Math.sin(latitude2) - Math.sin(latitude1) * Math.cos(latitude2) * Math.cos(longDiff);
 
-		azi = (Math.toDegrees(Math.atan2(y, x))+360)%360;
-
+		azi = (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
 	}
 
 }

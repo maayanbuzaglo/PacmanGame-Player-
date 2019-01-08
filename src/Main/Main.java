@@ -1,4 +1,4 @@
-package Ex4;
+package Main;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

@@ -24,7 +24,7 @@ public class Algorithm {
 	 * An empty constructor.
 	 */
 	public Algorithm() throws IOException {
-		
+
 		map = new Map();
 		bList = new ArrayList<GeoBox>(); //list of boxes.
 		outerPoint = new ArrayList<Point3D>(); //list of coordinates of the relevant corners.
@@ -40,8 +40,9 @@ public class Algorithm {
 		cornersLine = new ArrayList<Line2D>(); //lists of all the lines in the path to the target.
 		this.game = new Game(game); //a game.
 		outerPixel = new ArrayList<Pixel>();
-		
+
 		for (int i = 0; i < game.sizeB(); i++) {
+
 			bList.add(game.getBox(i));
 		}
 		for (GeoBox it: bList) {
@@ -58,7 +59,7 @@ public class Algorithm {
 		}
 		this.mainAlgo();
 	}
-	
+
 	/*
 	 * The main algorithm of this class.
 	 */
@@ -73,25 +74,25 @@ public class Algorithm {
 			Point3D upLeft = new Point3D(it.getMin().y(), it.getMax().x());
 			Point3D upRight = new Point3D(it.getMax().y(), it.getMax().x());
 
-			//check if the corner down right is in an other box.
+			//checks if the corner down right is in another box.
 			isIn = this.PointIn(downRight, it, bList);
 			if (!isIn) {
 				outerPoint.add(downRight);
 			}
 
-			//check if the corner down left is in an other box.
+			//checks if the corner down left is in another box.
 			isIn = this.PointIn(downLeft, it, bList);
 			if (!isIn) {
 				outerPoint.add(downLeft);
 			}
 
-			//check if the corner up left is in an other box.
+			//checks if the corner up left is in another box.
 			isIn = this.PointIn(upLeft, it, bList);
 			if (!isIn) {
 				outerPoint.add(upLeft);
 			}
 
-			//check if the corner up right is in an other box.
+			//checks if the corner up right is in another box.
 			isIn = this.PointIn(upRight, it, bList);
 			if (!isIn) {
 				outerPoint.add(upRight);
@@ -102,19 +103,6 @@ public class Algorithm {
 			Pixel temp = map.Point2Pixel(it.x(), it.y());
 			outerPixel.add(temp);
 		}
-		
-
-
-//		Robot.Fruit closestFruit = closetFruit(game);
-//		double fruitDis = game.getPlayer().getLocation().distance2D(closestFruit.getLocation());
-//
-//		if(closestFruit != null) {
-//			while(!(game.getPlayer().getLocation().equalsXY(closestFruit.getLocation()))) {
-//
-//
-//			}
-//		}
-
 	}
 
 	public void test(Point3D a, Point3D b) {
@@ -129,18 +117,16 @@ public class Algorithm {
 			Node d = new Node("" + i);
 			G.add(d);
 		}
-		
+
 		G.add(new Node(target)); // Node "b" (15)
 
 		ArrayList<Pixel> see = new ArrayList<Pixel>();
 
 		Pixel a1 = new Pixel(a.x(), a.y());
 		see = this.SeePoints(a1);
-		System.out.println("--"+see);
 		for (int i = 0; i < see.size(); i++) {
 			String s = "" +(i+1);
-//			if (see.get(i) != null)
-				G.addEdge("a", s, a.distance2D(new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())));
+			G.addEdge("a", s, a.distance2D(new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())));
 		}
 
 		for (int i = 0; i < outerPixel.size(); i++) {
@@ -148,8 +134,7 @@ public class Algorithm {
 			for (int j = 0; j < see.size(); j++) {
 				String s = "" +(j+1);
 				String s2 = "" +(i+1);
-//				if ((see.get(j) != null) && (j != i))
-					G.addEdge(s2, s, (new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())).distance2D(new Point3D(outerPixel.get(j).getX(), outerPixel.get(j).getY())));
+				G.addEdge(s2, s, (new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())).distance2D(new Point3D(outerPixel.get(j).getX(), outerPixel.get(j).getY())));
 			}
 		}
 
@@ -157,22 +142,20 @@ public class Algorithm {
 		see = this.SeePoints(b1);
 		for (int i = 0; i < see.size(); i++) {
 			String s = "" +(i+1);
-//			if (see.get(i) != null)
-				G.addEdge("b", s, b.distance2D(new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())));
+			G.addEdge("b", s, b.distance2D(new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())));
 		}
 
 		// This is the main call for computing all the shortest path from node 0 ("a")
-        //Graph_Algo.dijkstra(G, source);
+		//Graph_Algo.dijkstra(G, source);
 		double n = Graph_Algo.dijkstra(G, source);
-		System.out.println(n);
 
 		Node bb = G.getNodeByName(target);
 		System.out.println("** Graph Demo for OOP_Ex4 **");
 		System.out.println(b);
-		System.out.println("Dist: "+bb.getDist());
+		System.out.println("Dist: " + bb.getDist());
 		ArrayList<String> shortestPath = bb.getPath();
-		for(int i=0; i < shortestPath.size(); i++) {
-			System.out.print(","+shortestPath.get(i));
+		for(int i = 0; i < shortestPath.size(); i++) {
+			System.out.print("," + shortestPath.get(i));
 		}
 	}
 
@@ -240,71 +223,72 @@ public class Algorithm {
 		return closetFruit;
 	}
 
-	/*
-	 * This function checks what pacman is closest to the player.
-	 */
-	public Robot.Packman closetPacman(Game game) {
+	//	/*
+	//	 * This function checks what pacman is closest to the player.
+	//	 */
+	//	public Robot.Packman closetPacman(Game game) {
+	//
+	//		Robot.Packman closetPacman = game.getPackman(0);
+	//		double minDistance = game.getPlayer().getLocation().distance2D(game.getPackman(0).getLocation());
+	//		for(Robot.Packman it: game.getRobots()) {
+	//			double tempDistance = game.getPlayer().getLocation().distance2D(it.getLocation());
+	//			if(minDistance > tempDistance) {
+	//				minDistance = tempDistance;
+	//				closetPacman = it;
+	//			}
+	//		}
+	//		return closetPacman;
+	//	}
 
-		Robot.Packman closetPacman = game.getPackman(0);
-		double minDistance = game.getPlayer().getLocation().distance2D(game.getPackman(0).getLocation());
-		for(Robot.Packman it: game.getRobots()) {
-			double tempDistance = game.getPlayer().getLocation().distance2D(it.getLocation());
-			if(minDistance > tempDistance) {
-				minDistance = tempDistance;
-				closetPacman = it;
-			}
-		}
-		return closetPacman;
-	}
-
 	/*
-	 * 
+	 * This function finds the points the player "see".
 	 */
 	public ArrayList<Pixel> SeePoints(Pixel a) {
-		
-		ArrayList<Pixel> ans = new ArrayList<Pixel>();
-		for (Pixel b: outerPixel) {
 
-		Line2D a2b = new Line2D.Double(a.getX(),a.getY(),b.getX(),b.getY());
-		boolean flag = true ; 
-		boolean checkIFonLine = true;
-		for (int i = 0; i < cornersLine.size() && flag; i++)
-		{
-			checkIFonLine = true ; 
-			Pixel p1 = new Pixel(cornersLine.get(i).getX1(),cornersLine.get(i).getY1());
-			Pixel p2 = new Pixel(cornersLine.get(i).getX2(),cornersLine.get(i).getY2());
-			if(a.equals(p1) || a.equals(p2) || b.equals(p1) || b.equals(p2)) {
-				checkIFonLine = false ;
+		ArrayList<Pixel> ans = new ArrayList<Pixel>();
+
+		for (Pixel b: outerPixel) {
+			Line2D a2b = new Line2D.Double(a.getX(),a.getY(),b.getX(),b.getY());
+			boolean flag = true ; 
+			for (int i = 0; i < cornersLine.size() && flag; i++) {
+				Pixel p1 = new Pixel(cornersLine.get(i).getX1(),cornersLine.get(i).getY1());
+				Pixel p2 = new Pixel(cornersLine.get(i).getX2(),cornersLine.get(i).getY2());
+				if(!a.equals(p1) && !a.equals(p2) && !b.equals(p1) && !b.equals(p2) && linesCut(a2b,cornersLine.get(i))) {
+					flag = false ; 
+				}
 			}
-			if(checkIFonLine && linesCut(a2b,cornersLine.get(i))) {
-				flag = false ; 
+			if (flag) {
+				ans.add(b);
 			}
-		}
-		if (flag)
-		{
-			ans.add(b);
-		}
-		else {
-			ans.add(null);
-		}
+			else {
+				ans.add(null);
+			}
 		}
 		return ans;
 	}
 
+	/*
+	 * This function checks if the lines are cut.
+	 * true - if they are.
+	 * false - if they are not.
+	 */
 	public boolean linesCut(Line2D l1, Line2D l2) {
 		return l1.intersectsLine(l2);
 	}
 
+	/*
+	 * Example.
+	 */
 	public static void main(String[] args) throws IOException {
-		double[] xx = {88,88,356,356,60,60,310,310,120,164,277,422,277,422};
-		double[] yy = {50,102,50,102,218,254,254,218,275,275,125,125,192,192};
+		double[] xx = {88, 88, 356, 356, 60, 60, 310, 310, 120, 164, 277, 422, 277, 422};
+		double[] yy = {50, 102, 50, 102, 218, 254, 254, 218, 275, 275, 125, 125, 192, 192};
 		int size = xx.length;
 		ArrayList<Point3D> pp = new ArrayList<Point3D>(); // like outerPixel
-		for(int i=0;i<size;i++) {
+		for(int i = 0; i < size; i++) {
 			pp.add(new Point3D(xx[i], yy[i]));
 		}
 		Map m = new Map();
-		Game g = new Game("C:\\Users\\nahama\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example4.csv");
+		Game g = new Game("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example4.csv");
 		Algorithm algo = new Algorithm(g);
 		Point3D pac = new Point3D(g.getPackman(0).getLocation().y(),g.getPackman(0).getLocation().x());
 		Point3D tar = new Point3D(g.getTarget(0).getLocation().y(),g.getTarget(0).getLocation().x());
