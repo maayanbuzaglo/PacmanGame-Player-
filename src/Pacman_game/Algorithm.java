@@ -16,7 +16,7 @@ public class Algorithm {
 	public Map map;
 	public ArrayList<GeoBox> bList; //list of boxes.
 	public ArrayList<Point3D> outerPoint; //list of coordinates of the relevant corners.
-	public ArrayList<Point3D> outerPixel; //list of Pixels of the relevant corners.
+	public ArrayList<Pixel> outerPixel; //list of Pixels of the relevant corners.
 	public ArrayList<Line2D> cornersLine; //lists of all the lines in the path to the target.
 	public Robot.Game game; //a game.
 
@@ -39,12 +39,8 @@ public class Algorithm {
 		outerPoint = new ArrayList<Point3D>(); //list of coordinates of the relevant corners.
 		cornersLine = new ArrayList<Line2D>(); //lists of all the lines in the path to the target.
 		this.game = new Game(game); //a game.
-		outerPixel = new ArrayList<Point3D>();
-//		for (Point3D it: outerPixel) {
-//			Pixel t = new Pixel(it.x(), it.y());
-//			Point3D temp = map.Pixel2Point(t);
-//			outerPoint.add(temp);
-//		}
+		outerPixel = new ArrayList<Pixel>();
+		
 		for (int i = 0; i < game.sizeB(); i++) {
 			bList.add(game.getBox(i));
 		}
@@ -103,9 +99,10 @@ public class Algorithm {
 		}
 
 		for (Point3D it: outerPoint) {
-			Pixel temp = map.Point2Pixel(it.y(), it.x());
-			outerPixel.add(new Point3D(temp.getX(), temp.getY()));
+			Pixel temp = map.Point2Pixel(it.x(), it.y());
+			outerPixel.add(temp);
 		}
+		
 
 
 //		Robot.Fruit closestFruit = closetFruit(game);
@@ -135,15 +132,15 @@ public class Algorithm {
 		
 		G.add(new Node(target)); // Node "b" (15)
 
-		ArrayList<Point3D> see = new ArrayList<Point3D>();
+		ArrayList<Pixel> see = new ArrayList<Pixel>();
 
-		Point3D a1 = map.Pixel2Point(new Pixel(a.x(), a.y()));
+		Pixel a1 = new Pixel(a.x(), a.y());
 		see = this.SeePoints(a1);
 		System.out.println("--"+see);
 		for (int i = 0; i < see.size(); i++) {
 			String s = "" +(i+1);
 //			if (see.get(i) != null)
-				G.addEdge("a", s, a.distance2D(outerPixel.get(i)));
+				G.addEdge("a", s, a.distance2D(new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())));
 		}
 
 		for (int i = 0; i < outerPixel.size(); i++) {
@@ -152,15 +149,16 @@ public class Algorithm {
 				String s = "" +(j+1);
 				String s2 = "" +(i+1);
 //				if ((see.get(j) != null) && (j != i))
-					G.addEdge(s2, s, outerPixel.get(i).distance2D(outerPixel.get(j)));
+					G.addEdge(s2, s, (new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())).distance2D(new Point3D(outerPixel.get(j).getX(), outerPixel.get(j).getY())));
 			}
 		}
 
-		see = this.SeePoints(b);
+		Pixel b1 = new Pixel(b.x(), b.y());
+		see = this.SeePoints(b1);
 		for (int i = 0; i < see.size(); i++) {
 			String s = "" +(i+1);
 //			if (see.get(i) != null)
-				G.addEdge("b", s, b.distance2D(outerPixel.get(i)));
+				G.addEdge("b", s, b.distance2D(new Point3D(outerPixel.get(i).getX(), outerPixel.get(i).getY())));
 		}
 
 		// This is the main call for computing all the shortest path from node 0 ("a")
@@ -168,11 +166,11 @@ public class Algorithm {
 		double n = Graph_Algo.dijkstra(G, source);
 		System.out.println(n);
 
-		Node b1 = G.getNodeByName(target);
+		Node bb = G.getNodeByName(target);
 		System.out.println("** Graph Demo for OOP_Ex4 **");
 		System.out.println(b);
-		System.out.println("Dist: "+b1.getDist());
-		ArrayList<String> shortestPath = b1.getPath();
+		System.out.println("Dist: "+bb.getDist());
+		ArrayList<String> shortestPath = bb.getPath();
 		for(int i=0; i < shortestPath.size(); i++) {
 			System.out.print(","+shortestPath.get(i));
 		}
@@ -262,25 +260,33 @@ public class Algorithm {
 	/*
 	 * 
 	 */
-	public ArrayList<Point3D> SeePoints(Point3D a) {
+	public ArrayList<Pixel> SeePoints(Pixel a) {
+		
+		ArrayList<Pixel> ans = new ArrayList<Pixel>();
+		for (Pixel b: outerPixel) {
 
-		ArrayList<Point3D> ans = new ArrayList<Point3D>();
-		boolean inter = false;
-		Line2D a2b = new Line2D.Double();
-		for (Point3D b: outerPoint) {
-			inter = false;
-			a2b.setLine(a.x(), a.y(), b.x(), b.y());
-			if ((a.x() == b.x()) || (a.y() == b.y()))
-				ans.add(b);
-			else {
-				for (int i = 0; i < cornersLine.size() && !inter; i++) {
-					inter = linesCut(a2b, cornersLine.get(i));
-				}
-				if (!inter)
-					ans.add(b);
-				else
-					ans.add(null);
+		Line2D a2b = new Line2D.Double(a.getX(),a.getY(),b.getX(),b.getY());
+		boolean flag = true ; 
+		boolean checkIFonLine = true;
+		for (int i = 0; i < cornersLine.size() && flag; i++)
+		{
+			checkIFonLine = true ; 
+			Pixel p1 = new Pixel(cornersLine.get(i).getX1(),cornersLine.get(i).getY1());
+			Pixel p2 = new Pixel(cornersLine.get(i).getX2(),cornersLine.get(i).getY2());
+			if(a.equals(p1) || a.equals(p2) || b.equals(p1) || b.equals(p2)) {
+				checkIFonLine = false ;
 			}
+			if(checkIFonLine && linesCut(a2b,cornersLine.get(i))) {
+				flag = false ; 
+			}
+		}
+		if (flag)
+		{
+			ans.add(b);
+		}
+		else {
+			ans.add(null);
+		}
 		}
 		return ans;
 	}
@@ -298,10 +304,12 @@ public class Algorithm {
 			pp.add(new Point3D(xx[i], yy[i]));
 		}
 		Map m = new Map();
-		Game g = new Game("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example4.csv");
+		Game g = new Game("C:\\Users\\nahama\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example4.csv");
 		Algorithm algo = new Algorithm(g);
-		Pixel a1 = m.Point2Pixel(g.getPackman(0).getLocation().y(),g.getPackman(0).getLocation().x());
-		Pixel b1 = m.Point2Pixel(g.getTarget(0).getLocation().y(),g.getTarget(0).getLocation().x());
+		Point3D pac = new Point3D(g.getPackman(0).getLocation().y(),g.getPackman(0).getLocation().x());
+		Point3D tar = new Point3D(g.getTarget(0).getLocation().y(),g.getTarget(0).getLocation().x());
+		Pixel a1 = m.Point2Pixel(pac.x(), pac.y());
+		Pixel b1 = m.Point2Pixel(tar.x(), tar.y());
 
 		Point3D a =  new Point3D(new Point3D(a1.getX(), a1.getY()));
 		Point3D b =  new Point3D(new Point3D(b1.getX(), b1.getY()));
