@@ -31,8 +31,6 @@ public class Main {
 		Pixel p = new Pixel(662, 545);
 		Point3D ans = m.Pixel2Point(p);
 		Point3D poi = new Point3D(35.20751574428877, 32.10206734509563, 0);
-		System.out.println(poi);
-		System.out.println("ans: "+ans);
 	}
 
 }
