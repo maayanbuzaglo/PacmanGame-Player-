@@ -46,7 +46,7 @@ public class Algorithm {
 		game = new Game(); //a game.
 		outerPixel = new ArrayList<Pixel>();
 
-	
+
 	}
 
 	/*
@@ -66,8 +66,8 @@ public class Algorithm {
 			Pixel upLeft = new Pixel(map.Point2Pixel(box.getMin().y(), box.getMax().x()));
 			Pixel upRight = new Pixel(map.Point2Pixel(box.getMax().y(), box.getMax().x()));
 			Pixel downRight = new Pixel(map.Point2Pixel(box.getMax().y(), box.getMin().x()));
-			
-			
+
+
 			Point3D DL = map.Pixel2Point(downLeft);
 			Point3D DR = map.Pixel2Point(downRight);
 			Point3D UL = map.Pixel2Point(upLeft);
@@ -75,21 +75,21 @@ public class Algorithm {
 
 			temp.setLine(DL.x(), DL.y(), DR.x(), DR.y()); //the line - down left-down right.
 			cornersLine.add(temp);
-		
-			
+
+
 			temp.setLine(DL.x(), DL.y(), UL.x(), UL.y()); //the line - down left-up left.
 			cornersLine.add(temp);
-		
-			
+
+
 			temp.setLine(UL.x(), UL.y(), UR.x(), UR.y()); //the line - up left-up right.
 			cornersLine.add(temp);
-			
-			
+
+
 			temp.setLine(DR.x(), DR.y(), UR.x(), UR.y()); //the line - down right-up right.
 			cornersLine.add(temp);
-			
+
 		}
-		
+
 		//filters all the relevant corners.
 		boolean isIn = false;
 
@@ -123,11 +123,9 @@ public class Algorithm {
 				outerPoint.add(upRight);
 			}
 		}
-		System.out.println("aaaa"+outerPoint);
 
 		for (Point3D it: outerPoint) {
 			Pixel temp = map.Point2Pixel(it.x(), it.y());
-			System.out.println(temp);
 			outerPixel.add(temp);
 		}
 	}
@@ -139,7 +137,11 @@ public class Algorithm {
 		bList.clear();
 		cornersLine.clear();
 		shortPath.clear();
-		
+
+		System.out.println("a: "+a);
+		System.out.println("b: "+b);
+
+
 		this.game = new Game(game);
 		this.mainAlgo();
 
@@ -156,47 +158,50 @@ public class Algorithm {
 
 		G.add(new Node(target)); // Node "b" (15)
 
-		ArrayList<Pixel> see = new ArrayList<Pixel>();
+		ArrayList<Point3D> see = new ArrayList<Point3D>();
 
-		Pixel a1 = map.Point2Pixel(a.x(), a.y());
-		
-//		for (Pixel it: outerPixel) {
-//		boolean ans = DidISeehim(a1, it);
-//		if (ans)
-//			see.add(it);
-//		}
 
-		
-		see = this.SeePoints(a1);
-		
+		see = this.SeePoints(a);
+		System.out.println("seeeee");
+		System.out.println(see);
+
+
 		for (int i = 0; i < see.size(); i++) {
-			String s = "" +(i+1);
-			System.out.println(i);
-			G.addEdge("a", s, a.distance2D(outerPoint.get(i)));
-		}
-
-		for (int i = 0; i < outerPixel.size(); i++) {
-			see = this.SeePoints(outerPixel.get(i));
-			for (int j = 0; j < see.size(); j++) {
-				String s = "" +(j+1);
-				String s2 = "" +(i+1);
-				G.addEdge(s2, s, outerPoint.get(i).distance2D(outerPoint.get(j)));
+			if (see.get(i)!= null) {
+				System.out.println("a>>"+i);
+				String s = "" +(i+1);
+				G.addEdge("a", s, a.distance2D(outerPoint.get(i)));
 			}
 		}
 
-		Pixel b1 = map.Point2Pixel(b.x(), b.y());
-		
-		see = this.SeePoints(b1);
+		for (int i = 0; i < outerPoint.size(); i++) {
+			see = this.SeePoints(outerPoint.get(i));
+			for (int j = 0; j < see.size(); j++) {
+				if (see.get(j)!= null) {
+					System.out.println(i+">>"+j);
+					String s = "" +(j+1);
+					String s2 = "" +(i+1);
+					G.addEdge(s2, s, outerPoint.get(i).distance2D(outerPoint.get(j)));
+				}
+			}
+		}
+
+//		Pixel b1 = map.Point2Pixel(b.x(), b.y());
+
+		see = this.SeePoints(b);
 		for (int i = 0; i < see.size()-1; i++) {
-			String s = "" +(i+1);
-			G.addEdge("b", s, b.distance2D(outerPoint.get(i)));
+			if (see.get(i)!= null) {
+				System.out.println("b>>"+i);
+				String s = "" +(i+1);
+				G.addEdge("b", s, b.distance2D(outerPoint.get(i)));
+			}
 		}
 
 		// This is the main call for computing all the shortest path from node 0 ("a")
 		//Graph_Algo.dijkstra(G, source);
 		Graph_Algo.dijkstra(G, source);
 
-		
+
 		Node bb = G.getNodeByName(target);
 		System.out.println("** Graph Demo for OOP_Ex4 **");
 		System.out.println(b);
@@ -208,9 +213,9 @@ public class Algorithm {
 			shortPath.add(outerPoint.get(index));
 		}
 		System.out.println("Path "+shortPath);
-		
-		
-	
+
+
+
 	}
 
 	/**
@@ -297,15 +302,15 @@ public class Algorithm {
 	/*
 	 * This function finds the points the player "see".
 	 */
-	public ArrayList<Pixel> SeePoints(Pixel a) {
+	public ArrayList<Point3D> SeePoints(Point3D a) {
 
-		ArrayList<Pixel> ans = new ArrayList<Pixel>();
-		for (Pixel b: outerPixel) {
-			Line2D a2b = new Line2D.Double(a.getX(),a.getY(),b.getX(),b.getY());
+		ArrayList<Point3D> ans = new ArrayList<Point3D>();
+		for (Point3D b: outerPoint) {
+			Line2D a2b = new Line2D.Double(a.x(),a.y(),b.x(),b.y());
 			boolean flag = true ; 
 			for (int i = 0; i < cornersLine.size() && flag; i++) {
-				Pixel p1 = new Pixel(cornersLine.get(i).getX1(),cornersLine.get(i).getY1());
-				Pixel p2 = new Pixel(cornersLine.get(i).getX2(),cornersLine.get(i).getY2());
+				Point3D p1 = new Point3D(cornersLine.get(i).getX1(),cornersLine.get(i).getY1());
+				Point3D p2 = new Point3D(cornersLine.get(i).getX2(),cornersLine.get(i).getY2());
 				if(!a.equals(p1) && !a.equals(p2) && !b.equals(p1) && !b.equals(p2) && linesCut(a2b,cornersLine.get(i))) {
 					flag = false ; 
 				}
@@ -319,7 +324,7 @@ public class Algorithm {
 		}
 		return ans;
 	}
-	
+
 	private boolean DidISeehim(Pixel p1 , Pixel p2) 
 	{
 		Line2D Line = new Line2D.Double(p1.getX(),p1.getY(),p2.getX(),p2.getY());
