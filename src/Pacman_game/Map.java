@@ -212,7 +212,7 @@ public class Map {
 		}
 		
 		return player;
-		
+		 
 	}
 	
 	public Image getImage() {

@@ -3,6 +3,9 @@ package Pacman_game;
 import java.awt.geom.Line2D;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.swing.plaf.FontUIResource;
+
 import Coords.Coords;
 import Coords.GeoBox;
 import Geom.Point3D;
@@ -19,7 +22,7 @@ public class Algorithm {
 	public ArrayList<Pixel> outPixels; //list of Pixels of the relevant corners.
 	public ArrayList<Line2D> pathLines; //lists of all the lines in the path to the target.
 	public ArrayList<Point3D> shortestPath;
-	public Robot.Game game; //a game.
+	public Robot.Game game; //a game.	
 
 	/*
 	 * An empty constructor.
@@ -45,8 +48,6 @@ public class Algorithm {
 
 		//adds all the lines of the boxes to a list of lines.
 		for (GeoBox it: bList) {
-
-			Line2D temp = new Line2D.Double();
 
 			GeoBox box = new GeoBox(it);
 			Pixel downLeft = new Pixel(map.Point2Pixel(box.getMin().y(), box.getMin().x()));
@@ -110,24 +111,46 @@ public class Algorithm {
 			}
 		}
 
-		for (Point3D it: outPoints) {
+		for(Point3D it: outPoints) {
 			Pixel temp = map.Point2Pixel(it.y(), it.x());
 			outPixels.add(temp);
 		}
+		
+//		for (int i = 0; i < outPixels.size(); i = i + 4) {
+//
+//			Pixel p1 = new Pixel(outPixels.get(i).getX() - 10, outPixels.get(i).getY() - 10);
+//			outPixels.set(i, p1);
+//			
+//			Pixel p2 = new Pixel(outPixels.get(i + 1).getX() + 10, outPixels.get(i + 1).getY() - 10);
+//			outPixels.set(i + 1, p2);
+//			
+//			Pixel p3 = new Pixel(outPixels.get(i + 2).getX() + 10, outPixels.get(i + 2).getY() + 10);
+//			outPixels.set(i + 2, p3);
+//			
+//			Pixel p4 = new Pixel(outPixels.get(i + 3).getX() - 10, outPixels.get(i + 3).getY() + 10);
+//			outPixels.set(i + 3, p4);
+//			
+//		}
+		
+//		for (int i = 0; i < outPixels.size(); i++) {
+//			
+//			outPoints.set(i, new Point3D(map.Pixel2Point(outPixels.get(i));
+//		}
+		
 	}
 
 	/*
 	 * This is the main algorithm of the class,
 	 * which computes the shortest path from the source to the target.
 	 */
-	public void MAIN(Point3D a, Point3D b, Game game) {
+	public ArrayList<Point3D> MAIN(Point3D a, Point3D b, Game game) {
 
 		bList.clear();
 		outPixels.clear();
 		outPoints.clear();
 		pathLines.clear();
 		shortestPath.clear();
-		
+
 		this.game = new Game(game);
 		this.mainAlgo2();
 
@@ -146,7 +169,6 @@ public class Algorithm {
 
 		ArrayList<Point3D> see = new ArrayList<Point3D>();
 
-
 		Coords C = new  Coords();
 		for (int i = 0; i < outPixels.size(); i++) {
 			if(SeePoints(map.Point2Pixel(a.x(), a.y()), outPixels.get(i))) {
@@ -155,6 +177,10 @@ public class Algorithm {
 				G.addEdge("a", s,map.Point2Pixel(a.x(), a.y()).distance(outPixels.get(i)));
 				G.addEdge(s, "a",map.Point2Pixel(a.x(), a.y()).distance(outPixels.get(i)));
 			}
+		}
+		if(SeePoints(map.Point2Pixel(a.x(), a.y()), map.Point2Pixel(b.x(), b.y()))) {
+			G.addEdge("a", "b", map.Point2Pixel(a.x(), a.y()).distance(map.Point2Pixel(b.x(), b.y())));
+			G.addEdge("b", "a", map.Point2Pixel(a.x(), a.y()).distance(map.Point2Pixel(b.x(), b.y())));
 		}
 
 		for (int i = 0; i < outPixels.size(); i++) {
@@ -178,7 +204,6 @@ public class Algorithm {
 			}
 		}
 
-
 		// This is the main call for computing all the shortest path from node 0 ("a")
 		//Graph_Algo.dijkstra(G, source);
 
@@ -187,10 +212,19 @@ public class Algorithm {
 		Node bb = G.getNodeByName(target);
 		System.out.println("** Graph Demo for OOP_Ex4 **");
 		System.out.println("Dist: " + bb.getDist());
-		ArrayList<String> shortestPath = bb.getPath();
-		for (int i = 0; i < shortestPath.size(); i++) {
-			System.out.print(shortestPath.get(i) + ",");
+		ArrayList<String> shortPath = bb.getPath();
+		shortPath.add("b");
+		for (int i = 0; i < shortPath.size(); i++) {
+			System.out.print(shortPath.get(i) + ",");
 		}
+
+		for (int j = 1; j < shortPath.size()-1; j++) {
+
+			Point3D p = new Point3D(outPoints.get(Integer.parseInt(shortPath.get(j))).y(), outPoints.get(Integer.parseInt(shortPath.get(j))).x());
+			shortestPath.add(p);
+		}
+		shortestPath.add(b);
+		return shortestPath;
 	}
 
 	/**
@@ -292,11 +326,10 @@ public class Algorithm {
 
 		Game game = new Game("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example4.csv");
 		Algorithm algo = new Algorithm();
-		System.out.println(game.getPackman(0).getLocation());
-		System.out.println(game.getTarget(5).getLocation());
 		Point3D A = new Point3D(game.getPackman(0).getLocation().y(),game.getPackman(0).getLocation().x());
-		Point3D B = new Point3D(game.getTarget(5).getLocation().y(),game.getTarget(5).getLocation().x());
+		Point3D B = new Point3D(game.getTarget(0).getLocation().y(),game.getTarget(0).getLocation().x());
 		algo.MAIN(A, B, game);
+		System.out.println(algo.shortestPath);
 	}
 
 }
