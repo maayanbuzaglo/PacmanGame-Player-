@@ -93,6 +93,12 @@ public class Map {
 	/*
 	 * This function helps the Pixel2Point function.
 	 */
+	/**
+	 * This function helps the Pixel2Point function.
+	 * @param pixWeight represent the weight of the image.
+	 * @param pixHeight represent the height of the image.
+	 * @return the ratio between the pixels.
+	 */
 	public Pixel Pixel2Point2(double pixWeight, double pixHeight) {
 
 		pStart.change_Geometric_To_Cart();
@@ -105,8 +111,18 @@ public class Map {
 		return ans;
 	}
 
-	/*
+	/**
 	 * This function updates the frame.
+	 * @param p represent the new weight and height in pixel of the image.
+	 * @param player represent tthe player.
+	 * @param pList represent an array list of pacmans.
+	 * @param fList represent an array list of fruits.
+	 * @param gList represent an array list of ghosts.
+	 * @param bList1 represent an array list of points 1 from the boxes.
+	 * @param bList2 represent an array list of points 2 from the boxes.
+	 * @param bList3 represent an array list of points 3 from the boxes.
+	 * @param bList4 represent an array list of points 4 from the boxes.
+	 * @return the new pixel for the player.
 	 */
 	public Pixel changeFrame(Pixel p, Pixel player, ArrayList<Pixel> pList, ArrayList<Pixel> fList, ArrayList<Pixel> gList,
 			                ArrayList<Pixel> bList1, ArrayList<Pixel> bList2, ArrayList<Pixel> bList3, 

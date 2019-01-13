@@ -20,7 +20,7 @@ public class Algorithm {
 	public ArrayList<Point3D> shortestPath;
 	public Robot.Game game; //a game.	
 
-	/*
+	/**
 	 * An empty constructor.
 	 */
 	public Algorithm() throws IOException {
@@ -30,9 +30,15 @@ public class Algorithm {
 		outPoints = new ArrayList<Point3D>(); //list of coordinates of the relevant corners.
 		outPixels = new ArrayList<Pixel>(); //list of Pixels of the relevant corners.
 		pathLines = new ArrayList<Line2D>(); //lists of all the lines in the path to the target.
-		shortestPath = new ArrayList<Point3D>(); 
+		shortestPath = new ArrayList<Point3D>(); //An array list of the shortest path.
 		this.game = new Game(); //a game.
 	} 
+	
+	/**
+	 * This function is a continuation of the main algorithm,
+	 * which puts all the lines of the boxes in an array list, and filters all the relevant corners
+	 * that are not in other boxes. 
+	 */
 
 	public void mainAlgo2() {
 
@@ -134,9 +140,13 @@ public class Algorithm {
 		}	
 	}
 
-	/*
+	/**
 	 * This is the main algorithm of the class,
 	 * which computes the shortest path from the source to the target.
+	 * @param a represent the player location.
+	 * @param b represent the closest fruit location.
+	 * @param game represent the game.
+	 * @return an array list of the points of the path. 
 	 */
 	public ArrayList<Point3D> MAIN(Point3D a, Point3D b, Game game) {
 
@@ -161,6 +171,7 @@ public class Algorithm {
 
 		G.add(new Node(target)); // Node "b"
 
+		// all the corners that 'a' see.
 		for (int i = 0; i < outPixels.size(); i++) {
 			if(SeePoints(map.Point2Pixel(a.x(), a.y()), outPixels.get(i))) {
 				String s = "" + (i + 1);
@@ -170,11 +181,13 @@ public class Algorithm {
 			}
 		}
 		
+		// Does 'a' see 'b'.
 		if(SeePoints(map.Point2Pixel(a.x(), a.y()), map.Point2Pixel(b.x(), b.y()))) {
 			G.addEdge("a", "b", map.Point2Pixel(a.x(), a.y()).distance(map.Point2Pixel(b.x(), b.y())));
 			G.addEdge("b", "a", map.Point2Pixel(a.x(), a.y()).distance(map.Point2Pixel(b.x(), b.y())));
 		}
 
+		//Every corner which corners she sees.
 		for (int i = 0; i < outPixels.size(); i++) {
 			for (int j = i; j < outPixels.size(); j++) {
 				if(SeePoints(outPixels.get(i), outPixels.get(j))) {
@@ -187,6 +200,7 @@ public class Algorithm {
 			}
 		}
 
+		// all the corners that 'b' see.
 		for (int i = 0; i < outPixels.size(); i++) {
 			if(SeePoints(map.Point2Pixel(b.x(), b.y()), outPixels.get(i))) {
 				String s = "" + (i + 1);
@@ -208,6 +222,7 @@ public class Algorithm {
 			System.out.print(shortPath.get(i) + ",");
 		}
 
+		
 		for (int j = 1; j < shortPath.size() - 1; j++) {
 
 			Point3D p = new Point3D(outPoints.get(Integer.parseInt(shortPath.get(j)) - 1).y(), outPoints.get(Integer.parseInt(shortPath.get(j)) - 1).x());
@@ -242,8 +257,11 @@ public class Algorithm {
 		return false;
 	}
 
-	/*
+	/**
 	 * This function checks what fruit is closest to the player.
+	 * @param fruits represent an array list of fruits.
+	 * @param player represent the player.
+	 * @return the closest fruit to the player.
 	 */
 	public static Robot.Fruit closetFruit(ArrayList<Robot.Fruit> fruits, Robot.Packman player) {
 
@@ -259,8 +277,12 @@ public class Algorithm {
 		return closetFruit;
 	}
 
-	/*
-	 * This function finds the points the player "see".
+
+	/**
+	 * This function check if the player "see" the fruit. 
+	 * @param a represent the player.
+	 * @param b represent the fruit.
+	 * @return true if the player see the fruit and false otherwise.
 	 */
 	public boolean SeePoints(Pixel a , Pixel b) {
 		boolean ans = true; 
@@ -278,10 +300,11 @@ public class Algorithm {
 		return ans;
 	}
 
-	/*
+	/**
 	 * This function checks if the lines are cut.
-	 * true - if they are.
-	 * false - if they are not.
+	 * @param l1 represent the first line.
+	 * @param l2 represent the second line.
+	 * @return true if they are cut and false otherwise.
 	 */
 	public boolean linesCut(Line2D l1, Line2D l2) {
 		

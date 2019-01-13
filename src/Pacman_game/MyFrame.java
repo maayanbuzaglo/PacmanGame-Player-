@@ -61,8 +61,9 @@ public class MyFrame extends JFrame implements MouseListener {
 	private boolean ReadGameOn = false; //if true - draws player. else - need to read game.
 
 
-	/*
+	/**
 	 * An empty constructor.
+	 * @throws IOException if it can't read the image.
 	 */
 	public MyFrame() throws IOException {
 
@@ -93,8 +94,11 @@ public class MyFrame extends JFrame implements MouseListener {
 		this.addMouseListener(this);
 	}
 
-	/*
-	 * Constructor.
+
+	/**
+	 * A constructor that gets a game and fill the arrays list.
+	 * @param game represent a game.
+	 * @throws IOException if it can't read the image.
 	 */
 	public MyFrame(Robot.Game game) throws IOException {
 
@@ -122,8 +126,8 @@ public class MyFrame extends JFrame implements MouseListener {
 		initGUI();		
 		this.addMouseListener(this);
 	}
-
-	/*
+	
+	/**
 	 * This function makes the frame.
 	 */
 	private void initGUI() {
@@ -555,6 +559,12 @@ public class MyFrame extends JFrame implements MouseListener {
 	}
 	//}
 
+	/**
+	 * This class is a Thread for the control run.
+	 * @author nahama
+	 * @author maayan
+	 *
+	 */
 	public class ThreadT extends Thread {
 
 		@Override
@@ -633,6 +643,12 @@ public class MyFrame extends JFrame implements MouseListener {
 		}
 	}
 
+	/**
+	 * This class is a Thread for the automatic run.
+	 * @author nahama
+	 * @author maayan
+	 *
+	 */
 	public class ThreadT2 extends Thread {
 
 		@Override
@@ -749,8 +765,12 @@ public class MyFrame extends JFrame implements MouseListener {
 		}
 	} 
 
-	/*
+	/**
 	 * This function computes the azimuth between 2 coordinates.
+	 * @param lat1 represent the x of the first point.
+	 * @param lon1 represent the y of the first point.
+	 * @param lat2 represent the x of the second point.
+	 * @param lon2 represent the y of the second point.
 	 */
 	public void azimuth(double lat1, double lon1, double lat2, double lon2) {
 
