@@ -642,8 +642,9 @@ public class MyFrame extends JFrame implements MouseListener {
 		@Override
 		public void run() {
 
-			int i = 0 ; 
-			while(play.isRuning()) {
+			int i = 0 ;
+			int k = 0;
+			while(play.isRuning() && k < algo.shortestPath.size()) {
 				i++;
 
 				if(fList.isEmpty()) {
@@ -654,94 +655,101 @@ public class MyFrame extends JFrame implements MouseListener {
 					Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player)); //finds the closet fruit.
 					//computes the azimuth the player should go to eat the closet fruit.
 
-					for(Point3D it: algo.shortestPath) {
-						azimuth(player.getLocation().x(), player.getLocation().y(), it.y(), it.x());
+					//					for(Point3D it: algo.shortestPath) {
 
-						play.rotate(azi); 	
+					azimuth(player.getLocation().x(), player.getLocation().y(), algo.shortestPath.get(k).y(), algo.shortestPath.get(k).x());
 
-						System.out.println("***** Step " + i + " *****");
+					play.rotate(azi); 	
 
-						//getS the current score of the game.
-						String info = play.getStatistics();
-						System.out.println(info);
 
-						//getS the game-board current state.
-						ArrayList<String> board_data = play.getBoard();
+					System.out.println("***** Step " + i + " *****");
 
-						//clears all before read a new game (except the boxes).
-						pList.clear();
-						fList.clear();
-						gList.clear();
-						player = null;
-						playerPixel = null;
-						pacmanPixel.clear();
-						fruitPixel.clear();
-						ghostPixel.clear();
+					System.out.println(algo.shortestPath.get(k));
 
-						for(int i1 = 0; i1 < board_data.size(); i1++) {
+					//getS the current score of the game.
+					String info = play.getStatistics();
+					System.out.println(info);
 
-							//updates the player data.
-							if(board_data.get(i1).charAt(0) == 'M') {
-								player = new Robot.Packman(board_data.get(i1));
+					//getS the game-board current state.
+					ArrayList<String> board_data = play.getBoard();
 
-								playerPixel = new Pixel(map.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
-							}
+					//clears all before read a new game (except the boxes).
+					pList.clear();
+					fList.clear();
+					gList.clear();
+					player = null;
+					playerPixel = null;
+					pacmanPixel.clear();
+					fruitPixel.clear();
+					ghostPixel.clear();
 
-							//adds all the pacmans in the game to pacman list in this game.
-							else if(board_data.get(i1).charAt(0) == 'P') {
-								Robot.Packman pacman = new Robot.Packman(board_data.get(i1));
-								pList.add(pacman);
+					for(int i1 = 0; i1 < board_data.size(); i1++) {
 
-								Pixel p = new Pixel(map.Point2Pixel(pacman.getLocation().y(), pacman.getLocation().x()));
-								pacmanPixel.add(p);
-							}
+						//updates the player data.
+						if(board_data.get(i1).charAt(0) == 'M') {
+							player = new Robot.Packman(board_data.get(i1));
 
-							//adds all the fruits in the game to fruit list in this game.
-							else if(board_data.get(i1).charAt(0) == 'F') {
-								Robot.Fruit fruit = new Robot.Fruit(board_data.get(i1));
-								fList.add(fruit);
-
-								Pixel f = new Pixel(map.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
-								fruitPixel.add(f);
-							}
-
-							//adds all the ghosts in the game to ghost list in this game.
-							else if(board_data.get(i1).charAt(0) == 'G') {
-								Robot.Packman ghost = new Robot.Packman(board_data.get(i1));
-								gList.add(ghost);
-
-								Pixel g = new Pixel(map.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
-								ghostPixel.add(g);
-							}
+							playerPixel = new Pixel(map.Point2Pixel(player.getLocation().y(), player.getLocation().x()));
 						}
-						repaint();
-						try {
-							Thread.sleep(200);
-						}
-						catch (InterruptedException e) {
 
-							e.printStackTrace();
+						//adds all the pacmans in the game to pacman list in this game.
+						else if(board_data.get(i1).charAt(0) == 'P') {
+							Robot.Packman pacman = new Robot.Packman(board_data.get(i1));
+							pList.add(pacman);
+
+							Pixel p = new Pixel(map.Point2Pixel(pacman.getLocation().y(), pacman.getLocation().x()));
+							pacmanPixel.add(p);
+						}
+
+						//adds all the fruits in the game to fruit list in this game.
+						else if(board_data.get(i1).charAt(0) == 'F') {
+							Robot.Fruit fruit = new Robot.Fruit(board_data.get(i1));
+							fList.add(fruit);
+
+							Pixel f = new Pixel(map.Point2Pixel(fruit.getLocation().y(), fruit.getLocation().x()));
+							fruitPixel.add(f);
+						}
+
+						//adds all the ghosts in the game to ghost list in this game.
+						else if(board_data.get(i1).charAt(0) == 'G') {
+							Robot.Packman ghost = new Robot.Packman(board_data.get(i1));
+							gList.add(ghost);
+
+							Pixel g = new Pixel(map.Point2Pixel(ghost.getLocation().y(), ghost.getLocation().x()));
+							ghostPixel.add(g);
 						}
 					}
+					repaint();
+					try {
+						Thread.sleep(200);
+					}
+					catch (InterruptedException e) {
+
+						e.printStackTrace();
+					}
+					if (player.getLocation().equalsXY(algo.shortestPath.get(k))) {
+						k++;
+					}
 				}
-			}
+//			}
 		}
 	}
+}
 
-	/*
-	 * This function computes the azimuth between 2 coordinates.
-	 */
-	public void azimuth(double lat1, double lon1, double lat2, double lon2) {
+/*
+ * This function computes the azimuth between 2 coordinates.
+ */
+public void azimuth(double lat1, double lon1, double lat2, double lon2) {
 
-		double longitude1 = lon1;
-		double longitude2 = lon2;
-		double latitude1 = Math.toRadians(lat1);
-		double latitude2 = Math.toRadians(lat2);
-		double longDiff = Math.toRadians(longitude2 - longitude1);
-		double y = Math.sin(longDiff) * Math.cos(latitude2);
-		double x = Math.cos(latitude1) * Math.sin(latitude2) - Math.sin(latitude1) * Math.cos(latitude2) * Math.cos(longDiff);
+	double longitude1 = lon1;
+	double longitude2 = lon2;
+	double latitude1 = Math.toRadians(lat1);
+	double latitude2 = Math.toRadians(lat2);
+	double longDiff = Math.toRadians(longitude2 - longitude1);
+	double y = Math.sin(longDiff) * Math.cos(latitude2);
+	double x = Math.cos(latitude1) * Math.sin(latitude2) - Math.sin(latitude1) * Math.cos(latitude2) * Math.cos(longDiff);
 
-		azi = (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
-	}
+	azi = (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
+}
 
 }

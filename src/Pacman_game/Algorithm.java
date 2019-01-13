@@ -76,15 +76,17 @@ public class Algorithm {
 		boolean isIn = false;
 
 		for (GeoBox it: bList) {
-			Point3D downLeft = new Point3D(it.getMin().y(), it.getMin().x());
-			Point3D downRight = new Point3D(it.getMax().y(), it.getMin().x());
-			Point3D upLeft = new Point3D(it.getMin().y(), it.getMax().x());
-			Point3D upRight = new Point3D(it.getMax().y(), it.getMax().x());
+			
+//			 value: 0- down left, 1- down right, 2- up left, 3-up right.
+			Point3D downLeft = new Point3D(it.getMin().y(), it.getMin().x(), 0, 0);
+			Point3D downRight = new Point3D(it.getMax().y(), it.getMin().x(), 0, 1);
+			Point3D upLeft = new Point3D(it.getMin().y(), it.getMax().x(), 0, 2);
+			Point3D upRight = new Point3D(it.getMax().y(), it.getMax().x(), 0, 3);
 
-			downLeft = new Point3D(downLeft.y(), downLeft.x());
-			downRight = new Point3D(downRight.y(), downRight.x());
-			upLeft = new Point3D(upLeft.y(), upLeft.x());
-			upRight = new Point3D(upRight.y(), upRight.x());
+			downLeft = new Point3D(downLeft.y(), downLeft.x(), 0, 0);
+			downRight = new Point3D(downRight.y(), downRight.x(), 0, 1);
+			upLeft = new Point3D(upLeft.y(), upLeft.x(), 0, 2);
+			upRight = new Point3D(upRight.y(), upRight.x(), 0, 3);
 
 			//checks if the corner down right is in another box.
 			isIn = this.PointIn(downRight, it, bList);
@@ -116,26 +118,26 @@ public class Algorithm {
 			outPixels.add(temp);
 		}
 		
-//		for (int i = 0; i < outPixels.size(); i = i + 4) {
-//
-//			Pixel p1 = new Pixel(outPixels.get(i).getX() - 10, outPixels.get(i).getY() - 10);
-//			outPixels.set(i, p1);
-//			
-//			Pixel p2 = new Pixel(outPixels.get(i + 1).getX() + 10, outPixels.get(i + 1).getY() - 10);
-//			outPixels.set(i + 1, p2);
-//			
-//			Pixel p3 = new Pixel(outPixels.get(i + 2).getX() + 10, outPixels.get(i + 2).getY() + 10);
-//			outPixels.set(i + 2, p3);
-//			
-//			Pixel p4 = new Pixel(outPixels.get(i + 3).getX() - 10, outPixels.get(i + 3).getY() + 10);
-//			outPixels.set(i + 3, p4);
-//			
-//		}
+		for (int i = 0; i < outPixels.size(); i = i + 4) {
+
+			Pixel p1 = new Pixel(outPixels.get(i).getX() + 10, outPixels.get(i).getY() + 10);
+			outPixels.set(i, p1);
+			
+			Pixel p2 = new Pixel(outPixels.get(i + 1).getX() - 10, outPixels.get(i + 1).getY() + 10);
+			outPixels.set(i + 1, p2);
+			
+			Pixel p3 = new Pixel(outPixels.get(i + 2).getX() - 10, outPixels.get(i + 2).getY() - 10);
+			outPixels.set(i + 2, p3);
+			
+			Pixel p4 = new Pixel(outPixels.get(i + 3).getX() + 10, outPixels.get(i + 3).getY() - 10);
+			outPixels.set(i + 3, p4);
+			
+		}
 		
-//		for (int i = 0; i < outPixels.size(); i++) {
-//			
-//			outPoints.set(i, new Point3D(map.Pixel2Point(outPixels.get(i));
-//		}
+		for (int i = 0; i < outPixels.size(); i++) {
+			Point3D temp = map.Pixel2Point(outPixels.get(i));
+			outPoints.set(i, new Point3D(temp.y(), temp.x()));
+		}
 		
 	}
 
@@ -223,7 +225,38 @@ public class Algorithm {
 			Point3D p = new Point3D(outPoints.get(Integer.parseInt(shortPath.get(j))).y(), outPoints.get(Integer.parseInt(shortPath.get(j))).x());
 			shortestPath.add(p);
 		}
+		
+//		for (int i = 0; i < shortestPath.size(); i++) {
+//			
+//			Pixel p = map.Point2Pixel(shortestPath.get(i).x(), shortestPath.get(i).y());
+//			
+//		}
+		
+		
+		
+//		for (int i = 0; i < shortestPath.size(); i++) 
+//		{
+//
+//			switch (outPoints.get(i).value() {
+//			case 1:
+//				outPixels.get(shortestPath.get(i)).set_PixelX(PixelInclude.get(i).get_PixelX()-10);
+//				PixelInclude.get(i).set_PixelY(PixelInclude.get(i).get_PixelY()+10);
+//				break;
+//			case 2:
+//				PixelInclude.get(i).set_PixelX(PixelInclude.get(i).get_PixelX()+10);
+//				PixelInclude.get(i).set_PixelY(PixelInclude.get(i).get_PixelY()-10);
+//				break;
+//			case 3:
+//				PixelInclude.get(i).set_PixelX(PixelInclude.get(i).get_PixelX()+10);
+//				PixelInclude.get(i).set_PixelY(PixelInclude.get(i).get_PixelY()+10);
+//				break;
+//			case 0:
+//				PixelInclude.get(i).set_PixelX(PixelInclude.get(i).get_PixelX()-10);
+//				PixelInclude.get(i).set_PixelY(PixelInclude.get(i).get_PixelY()-10);
+//				break;
+//			}
 		shortestPath.add(b);
+		
 		return shortestPath;
 	}
 
@@ -238,13 +271,14 @@ public class Algorithm {
 		Coords c = new Coords();
 		Point3D meter = new Point3D(1, 1, 0);		
 
-		Point3D downLeft = new Point3D(box.getMin().y(), box.getMin().x());
+//		 value: 0- down left, 1- down right, 2- up left, 3-up right.
+		Point3D downLeft = new Point3D(box.getMin().y(), box.getMin().x(), 0, 0);
 		corners.add(c.add(downLeft, meter));
-		Point3D downRight = new Point3D(box.getMax().y(), box.getMin().x());
+		Point3D downRight = new Point3D(box.getMax().y(), box.getMin().x(), 0, 1);
 		corners.add(c.add(downRight, meter));
-		Point3D upLeft = new Point3D(box.getMin().y(), box.getMax().x());
+		Point3D upLeft = new Point3D(box.getMin().y(), box.getMax().x(), 0, 2);
 		corners.add(c.add(upLeft, meter));
-		Point3D upRight = new Point3D(box.getMax().y(), box.getMax().x());
+		Point3D upRight = new Point3D(box.getMax().y(), box.getMax().x(), 0, 3);
 		corners.add(c.add(upRight, meter));
 
 		return corners;
@@ -324,10 +358,10 @@ public class Algorithm {
 	 */
 	public static void main(String[] args) throws IOException {
 
-		Game game = new Game("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example4.csv");
+		Game game = new Game("C:\\Users\\nahama\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example9.csv");
 		Algorithm algo = new Algorithm();
-		Point3D A = new Point3D(game.getPackman(0).getLocation().y(),game.getPackman(0).getLocation().x());
-		Point3D B = new Point3D(game.getTarget(0).getLocation().y(),game.getTarget(0).getLocation().x());
+		Point3D A = new Point3D(game.getPackman(2).getLocation().y(),game.getPackman(2).getLocation().x());
+		Point3D B = new Point3D(game.getTarget(7).getLocation().y(),game.getTarget(7).getLocation().x());
 		algo.MAIN(A, B, game);
 		System.out.println(algo.shortestPath);
 	}

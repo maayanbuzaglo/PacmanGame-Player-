@@ -9,6 +9,7 @@ public class Pixel {
 
 	private double x;
 	private double y;
+	public int value;
 
 	/*
 	 * An empty constructor.
@@ -17,6 +18,7 @@ public class Pixel {
 		
 		this.x = 0;
 		this.y = 0;
+		this.value = 0;
 	}
 	
 	/*
@@ -26,6 +28,19 @@ public class Pixel {
 		
 		this.x = dx;
 		this.y = dy;
+		this.value = 0;
+
+	}
+	
+	/*
+	 * Constructor.
+	 */
+	public Pixel(double dx, double dy, int dvalue) {
+		
+		this.x = dx;
+		this.y = dy;
+		this.value = dvalue;
+
 	}
 
 	/*
@@ -35,6 +50,8 @@ public class Pixel {
 		
 		this.x = p.x;
 		this.y = p.y;
+		this.value = p.value;
+
 	}
 
 	/*
@@ -79,4 +96,13 @@ public class Pixel {
 		this.y = d;
 	}
 
+	public int getValue() {
+		return this.value;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+	
 }
