@@ -1,5 +1,5 @@
 
-This project is a kind of a pacman game, and like any pacman game, fruits are eaten by the pacmans. But this game is obout our player. He needs to eat all the fruits at the best time and to get the best score he can. He can also eat pacmans (and get more score for it), but there are ghosts that run after him and while they touch him he looses score. Beyond that, there are black boxes where the player can not walk (pacmans and ghosts can), once he reaches the borders of the boxes he's stuck in place. As long as he's stuck, he looses score.\
+This project is a kind of a pacman game, and like any pacman game, fruits are eaten by the pacmans. But this game is obout our player. He needs to eat all the fruits at the best time and to get the best score he can. He can also eat pacmans (and get more score for it), but there are ghosts that run after him and while they touch him he looses score. Beyond that, there are black boxes where the player can not walk (pacmans and ghosts can), once he reaches the borders of the boxes he's stuck in place. As long as he's stuck, he looses score.
 
 What distinguishes this game is that the game background is a map that represents a real map which you can find on https://www.google.com/earth/.
 ***Learn more about Global's coordinate system here: https://en.wikipedia.org/wiki/Geographic_coordinate_system.***
@@ -12,7 +12,7 @@ The pacmans ,the fruits, the ghosts and the player in the game represent real co
 You decide where the player be located by a mouse click on the map after reading a game from a csv file, which already have all the data of the other characters.
 
 There are two options to play the game:
-1. A control run option - it means you control the player, where will he go and what fruit or pacman should he eat next. \
+1. A control run option - it means you control the player, where will he go and what fruit or pacman should he eat next.
 2. An automatic run option - an algorithm that computes where will the player go and what fruit should he eat next considered the black boxes.
 
 ### The purpose of the game is to make the player eat all the fruits on the map in the shortest time possible and the best score.
