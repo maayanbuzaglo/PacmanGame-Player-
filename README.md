@@ -7,7 +7,7 @@ What distinguishes this game is that the game background is a map that represent
 (The game background map)
 ![alt text](https://github.com/maayanbuzaglo/OopNavigtion/blob/master/pictures/Ariel1.png)
 
-The pacmans ,the fruits, the ghosts and the player in the game represent real coordinates on Earth which are the real location on the map in the background.
+The pacmans, the fruits, the ghosts and the player in the game represent real coordinates on Earth which are the real location on the map in the background.
 
 You decide where the player be located by a mouse click on the map after reading a game from a csv file, which already have all the data of the other characters.
 
