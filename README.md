@@ -35,7 +35,7 @@ A class that represents the game frame.
 A graphical class that allows robots and fruits to be displayed on the map, displaying the activity of algorithms and performing a reconstruction of data from csv files.
 
 (Game example)
-![alt text](https://github.com/maayanbuzaglo/OopNavigtion/blob/master/pictures/Ariel1.png)
+![alt text](https://github.com/maayanbuzaglo/OopNavigtion/blob/master/pictures/Game Example.png)
 
 
 
