@@ -3,10 +3,6 @@ package Pacman_game;
 import java.awt.geom.Line2D;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.swing.plaf.FontUIResource;
-
-import Coords.Coords;
 import Coords.GeoBox;
 import Geom.Point3D;
 import Robot.Game;
@@ -77,16 +73,15 @@ public class Algorithm {
 
 		for (GeoBox it: bList) {
 			
-//			 value: 0- down left, 1- down right, 2- up left, 3-up right.
-			Point3D downLeft = new Point3D(it.getMin().y(), it.getMin().x(), 0, 0);
-			Point3D downRight = new Point3D(it.getMax().y(), it.getMin().x(), 0, 1);
-			Point3D upLeft = new Point3D(it.getMin().y(), it.getMax().x(), 0, 2);
-			Point3D upRight = new Point3D(it.getMax().y(), it.getMax().x(), 0, 3);
+			Point3D downLeft = new Point3D(it.getMin().y(), it.getMin().x());
+			Point3D downRight = new Point3D(it.getMax().y(), it.getMin().x());
+			Point3D upLeft = new Point3D(it.getMin().y(), it.getMax().x());
+			Point3D upRight = new Point3D(it.getMax().y(), it.getMax().x());
 
-			downLeft = new Point3D(downLeft.y(), downLeft.x(), 0, 0);
-			downRight = new Point3D(downRight.y(), downRight.x(), 0, 1);
-			upLeft = new Point3D(upLeft.y(), upLeft.x(), 0, 2);
-			upRight = new Point3D(upRight.y(), upRight.x(), 0, 3);
+			downLeft = new Point3D(downLeft.y(), downLeft.x());
+			downRight = new Point3D(downRight.y(), downRight.x());
+			upLeft = new Point3D(upLeft.y(), upLeft.x());
+			upRight = new Point3D(upRight.y(), upRight.x());
 
 			//checks if the corner down right is in another box.
 			isIn = this.PointIn(downRight, it, bList);
@@ -131,14 +126,12 @@ public class Algorithm {
 			
 			Pixel p4 = new Pixel(outPixels.get(i + 3).getX() + 10, outPixels.get(i + 3).getY() - 10);
 			outPixels.set(i + 3, p4);
-			
 		}
 		
 		for (int i = 0; i < outPixels.size(); i++) {
 			Point3D temp = map.Pixel2Point(outPixels.get(i));
 			outPoints.set(i, new Point3D(temp.y(), temp.x()));
-		}
-		
+		}	
 	}
 
 	/*
@@ -169,17 +162,15 @@ public class Algorithm {
 
 		G.add(new Node(target)); // Node "b"
 
-		ArrayList<Point3D> see = new ArrayList<Point3D>();
-
-		Coords C = new  Coords();
 		for (int i = 0; i < outPixels.size(); i++) {
 			if(SeePoints(map.Point2Pixel(a.x(), a.y()), outPixels.get(i))) {
 				String s = "" + (i + 1);
-				System.out.println("a" + " >> " + s );
+				System.out.println("a" + " >> " + s);
 				G.addEdge("a", s,map.Point2Pixel(a.x(), a.y()).distance(outPixels.get(i)));
 				G.addEdge(s, "a",map.Point2Pixel(a.x(), a.y()).distance(outPixels.get(i)));
 			}
 		}
+		
 		if(SeePoints(map.Point2Pixel(a.x(), a.y()), map.Point2Pixel(b.x(), b.y()))) {
 			G.addEdge("a", "b", map.Point2Pixel(a.x(), a.y()).distance(map.Point2Pixel(b.x(), b.y())));
 			G.addEdge("b", "a", map.Point2Pixel(a.x(), a.y()).distance(map.Point2Pixel(b.x(), b.y())));
@@ -190,7 +181,7 @@ public class Algorithm {
 				if(SeePoints(outPixels.get(i), outPixels.get(j))) {
 					String s = "" + (j + 1);
 					String s2 = "" + (i + 1);
-					System.out.println(s2 + " >> " + s );
+					System.out.println(s2 + " >> " + s);
 					G.addEdge(s2, s, outPixels.get(i).distance(outPixels.get(j)));
 					G.addEdge(s, s2, outPixels.get(i).distance(outPixels.get(j)));
 				}
@@ -207,8 +198,6 @@ public class Algorithm {
 		}
 
 		// This is the main call for computing all the shortest path from node 0 ("a")
-		//Graph_Algo.dijkstra(G, source);
-
 		Graph_Algo.dijkstra(G, source);
 
 		Node bb = G.getNodeByName(target);
@@ -226,62 +215,9 @@ public class Algorithm {
 			shortestPath.add(p);
 		}
 		
-//		for (int i = 0; i < shortestPath.size(); i++) {
-//			
-//			Pixel p = map.Point2Pixel(shortestPath.get(i).x(), shortestPath.get(i).y());
-//			
-//		}
-		
-		
-		
-//		for (int i = 0; i < shortestPath.size(); i++) 
-//		{
-//
-//			switch (outPoints.get(i).value() {
-//			case 1:
-//				outPixels.get(shortestPath.get(i)).set_PixelX(PixelInclude.get(i).get_PixelX()-10);
-//				PixelInclude.get(i).set_PixelY(PixelInclude.get(i).get_PixelY()+10);
-//				break;
-//			case 2:
-//				PixelInclude.get(i).set_PixelX(PixelInclude.get(i).get_PixelX()+10);
-//				PixelInclude.get(i).set_PixelY(PixelInclude.get(i).get_PixelY()-10);
-//				break;
-//			case 3:
-//				PixelInclude.get(i).set_PixelX(PixelInclude.get(i).get_PixelX()+10);
-//				PixelInclude.get(i).set_PixelY(PixelInclude.get(i).get_PixelY()+10);
-//				break;
-//			case 0:
-//				PixelInclude.get(i).set_PixelX(PixelInclude.get(i).get_PixelX()-10);
-//				PixelInclude.get(i).set_PixelY(PixelInclude.get(i).get_PixelY()-10);
-//				break;
-//			}
 		shortestPath.add(b);
 		
 		return shortestPath;
-	}
-
-	/**
-	 * This function gets an Array List of the corners of the box + 1 meter. 
-	 * @param box represents a box.
-	 * @return an Array List of the corners of the box + 1 meter.
-	 */
-	public ArrayList<Point3D> CornersBox (GeoBox box) {
-
-		ArrayList<Point3D> corners = new ArrayList<Point3D>();
-		Coords c = new Coords();
-		Point3D meter = new Point3D(1, 1, 0);		
-
-//		 value: 0- down left, 1- down right, 2- up left, 3-up right.
-		Point3D downLeft = new Point3D(box.getMin().y(), box.getMin().x(), 0, 0);
-		corners.add(c.add(downLeft, meter));
-		Point3D downRight = new Point3D(box.getMax().y(), box.getMin().x(), 0, 1);
-		corners.add(c.add(downRight, meter));
-		Point3D upLeft = new Point3D(box.getMin().y(), box.getMax().x(), 0, 2);
-		corners.add(c.add(upLeft, meter));
-		Point3D upRight = new Point3D(box.getMax().y(), box.getMax().x(), 0, 3);
-		corners.add(c.add(upRight, meter));
-
-		return corners;
 	}
 
 	/**
@@ -297,7 +233,6 @@ public class Algorithm {
 		for (GeoBox it: boxes) {
 			Point3D downLeft = new Point3D(it.getMin().y(), it.getMin().x());
 			Point3D downRight = new Point3D(it.getMax().y(), it.getMin().x());
-			Point3D upLeft = new Point3D(it.getMin().y(), it.getMax().x());
 			Point3D upRight = new Point3D(it.getMax().y(), it.getMax().x());
 
 			if (!b.equals(it))
@@ -331,14 +266,14 @@ public class Algorithm {
 	public boolean SeePoints(Pixel a , Pixel b) {
 		boolean ans = true; 
 
-		Line2D Temp = new Line2D.Double(a.getX(),a.getY(),b.getX(),b.getY());
+		Line2D Temp = new Line2D.Double(a.getX(), a.getY(), b.getX(), b.getY());
 		for (int i = 0; i < pathLines.size(); i++) {
 			boolean tempAns = true ; 
-			Pixel pixel1Line = new Pixel(pathLines.get(i).getX1(),pathLines.get(i).getY1());
-			Pixel pixel2Line = new Pixel(pathLines.get(i).getX2(),pathLines.get(i).getY2());
+			Pixel pixel1Line = new Pixel(pathLines.get(i).getX1(), pathLines.get(i).getY1());
+			Pixel pixel2Line = new Pixel(pathLines.get(i).getX2(), pathLines.get(i).getY2());
 
 			if(a.equals(pixel1Line) || a.equals(pixel2Line) || b.equals(pixel1Line) || b.equals(pixel2Line)) tempAns = false;
-			if(linesCut(Temp, pathLines.get(i)) && tempAns  ) ans = false;
+			if(linesCut(Temp, pathLines.get(i)) && tempAns) ans = false;
 		}
 
 		return ans;
@@ -350,6 +285,7 @@ public class Algorithm {
 	 * false - if they are not.
 	 */
 	public boolean linesCut(Line2D l1, Line2D l2) {
+		
 		return l1.intersectsLine(l2);
 	}
 

@@ -10,7 +10,6 @@ public class Point3D implements Geom_element, Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private double _x, _y, _z;
-	public int value;
 
 	/*
 	 * Constructor that gets x, y, z.
@@ -20,18 +19,6 @@ public class Point3D implements Geom_element, Serializable {
 		_x = x;
 		_y = y;
 		_z = z;
-		value = 0;
-	}
-	
-	/*
-	 * Constructor that gets x, y, z.
-	 */
-	public Point3D(double x, double y, double z, int value) {
-		
-		_x = x;
-		_y = y;
-		_z = z;
-		this.value = value;
 	}
 
 	/*
@@ -42,7 +29,6 @@ public class Point3D implements Geom_element, Serializable {
 		_x = p.x();
 		_y = p.y();
 		_z = p.z();
-		value = 0;
 	}
 
 	/*
@@ -91,15 +77,6 @@ public class Point3D implements Geom_element, Serializable {
 
 	public void set_z(double _z) {
 		this._z = _z;
-	}
-	
-
-	public int getValue() {
-		return this.value;
-	}
-
-	public void setValue(int value) {
-		this.value = value;
 	}
 
 	public int ix() {
@@ -380,6 +357,5 @@ public class Point3D implements Geom_element, Serializable {
 			this._x = Math.toDegrees(_x);
 			this._y = Math.toDegrees(_y);
 		}
-		
 		
 }

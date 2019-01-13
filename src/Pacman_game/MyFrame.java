@@ -16,8 +16,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-
 import Coords.GeoBox;
 import Coords.LatLonAlt;
 import Geom.Point3D;
@@ -130,8 +128,8 @@ public class MyFrame extends JFrame implements MouseListener {
 	 */
 	private void initGUI() {
 
-				MyPanel grafic = new MyPanel(); //For clear moves, but does problems.
-				add(grafic);
+		//		MyPanel grafic = new MyPanel(); //For clear moves, but does problems.
+		//		add(grafic);
 
 		MenuBar menuBar = new MenuBar();
 		Menu gameOn = new Menu("Game"); //Game - Read game, Control run, Automatic run.
@@ -339,14 +337,11 @@ public class MyFrame extends JFrame implements MouseListener {
 
 						Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player)); //finds the closet fruit.
 
-						//computes the azimuth the player should go to eat the closet fruit.
-
 						Point3D A = new Point3D(player.getLocation().y(), player.getLocation().x());
 						Point3D B = new Point3D(closetFruit.getLocation().y(), closetFruit.getLocation().x());
 						algo.MAIN(A, B, game);
-						System.out.println("-----"+algo.shortestPath);
-						System.out.println("-----"+algo.shortestPath.get(0));
 
+						//computes the azimuth the player should go to eat the closet fruit.
 						azimuth(player.getLocation().x(), player.getLocation().y(), algo.shortestPath.get(0).y(), algo.shortestPath.get(0).x());
 
 						ThreadT2 S = new ThreadT2();
@@ -431,17 +426,9 @@ public class MyFrame extends JFrame implements MouseListener {
 			e.printStackTrace();
 		}
 	}
-	
-
-	private void add(MyPanel grafic) {
-		// TODO Auto-generated method stub
-		
-	}
-
 
 	int x = -1;
 	int y = -1;
-
 
 	/*
 	 * This function handles mouse clicks events.
@@ -488,7 +475,7 @@ public class MyFrame extends JFrame implements MouseListener {
 
 	}
 
-		public class MyPanel extends JPanel { //for clear moves.
+	//	public class MyPanel extends JPanel { //for clear moves.
 
 	/*
 	 * This function paints pacmans, fruits, ghosts and boxes on the game frame.
@@ -566,7 +553,7 @@ public class MyFrame extends JFrame implements MouseListener {
 			g.drawImage(ghostImage, (int)ghostPixel.get(i).getX(), (int)ghostPixel.get(i).getY(), 60, 40, this);
 		}
 	}
-	}
+	//}
 
 	public class ThreadT extends Thread {
 
@@ -650,17 +637,15 @@ public class MyFrame extends JFrame implements MouseListener {
 
 		@Override
 		public void run() {
-			
+
 			while(play.isRuning()) {
-				
+
 				int FruitList = fList.size();
 				int i = 0 ;
 				int k = 0;
-				
+
 				Fruit closetFruit = new Fruit(Algorithm.closetFruit(fList, player)); //finds the closet fruit.
-
-				//computes the azimuth the player should go to eat the closet fruit.
-
+				
 				Point3D A = new Point3D(player.getLocation().y(), player.getLocation().x());
 				Point3D B = new Point3D(closetFruit.getLocation().y(), closetFruit.getLocation().x());
 				algo.MAIN(A, B, game);
@@ -672,16 +657,12 @@ public class MyFrame extends JFrame implements MouseListener {
 						play.stop();
 					}
 					else {
-
 						closetFruit = new Fruit(Algorithm.closetFruit(fList, player)); //finds the closet fruit.
+
 						//computes the azimuth the player should go to eat the closet fruit.
-
-						//					for(Point3D it: algo.shortestPath) {
-
 						azimuth(player.getLocation().x(), player.getLocation().y(), algo.shortestPath.get(k).y(), algo.shortestPath.get(k).x());
 
 						play.rotate(azi); 	
-
 
 						System.out.println("***** Step " + i + " *****");
 
@@ -693,10 +674,10 @@ public class MyFrame extends JFrame implements MouseListener {
 						ArrayList<String> board_data = play.getBoard();
 
 						//clears all before read a new game (except the boxes).
+						player = null;
 						pList.clear();
 						fList.clear();
 						gList.clear();
-						player = null;
 						playerPixel = null;
 						pacmanPixel.clear();
 						fruitPixel.clear();
@@ -746,7 +727,6 @@ public class MyFrame extends JFrame implements MouseListener {
 
 							e.printStackTrace();
 						}
-						System.out.println("[[[[[[[[["+algo.shortestPath);
 						Point3D temp = new Point3D(algo.shortestPath.get(k).y(), algo.shortestPath.get(k).x());
 						double tempNum1 = temp.x() * 10000;
 						tempNum1 = (int)tempNum1;
@@ -762,22 +742,6 @@ public class MyFrame extends JFrame implements MouseListener {
 
 						if (fList.size() != FruitList) {
 							k++;
-//							Fruit closetFruit2 = new Fruit(Algorithm.closetFruit(fList, player)); //finds the closet fruit.
-//
-//							//computes the azimuth the player should go to eat the closet fruit.
-//
-//							Point3D A = new Point3D(player.getLocation().y(), player.getLocation().x());
-//							System.out.println(player.getLocation());
-//							System.out.println(closetFruit2.getLocation());
-//							Point3D B = new Point3D(closetFruit2.getLocation().y(), closetFruit2.getLocation().x());
-//							algo.MAIN(A, B, game);
-//							System.out.println("-----"+algo.shortestPath);
-//							System.out.println("-----"+algo.shortestPath.get(0));
-//
-//							azimuth(player.getLocation().x(), player.getLocation().y(), algo.shortestPath.get(0).y(), algo.shortestPath.get(0).x());
-//
-//							ThreadT2 S = new ThreadT2();
-//							S.start();
 						}
 					}
 				}
@@ -802,4 +766,3 @@ public class MyFrame extends JFrame implements MouseListener {
 	}
 
 }
-		
