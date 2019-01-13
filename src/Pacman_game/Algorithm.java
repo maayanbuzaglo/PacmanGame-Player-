@@ -150,7 +150,6 @@ public class Algorithm {
 		this.mainAlgo2();
 
 		int size = outPixels.size();
-		System.out.println(outPoints);
 		Graph G = new Graph(); 
 		String source = "a"; //the player.
 		String target = "b"; //the closest fruit.

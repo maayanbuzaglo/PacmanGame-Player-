@@ -21,7 +21,6 @@ public class Main {
 		window.setVisible(true);
 		window.setSize(1433, 642);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 	}
 
 }
