@@ -28,7 +28,7 @@ A class that represents a pixel in the game.
 
 ## Algorithm:
 A class that gets game and receives the optimal path (shortest) so that all fruits will be "eaten" as quickly as possible considered the black boxes the player can not walk in. This is the main algorithmic class and includes calculating "fruit tracks" for the player. The purpose of the algorithm is to minimize the amount of time it takes for the player to eat all the fruits.\
-The algorithm works as long as there are fruits on the map. It checks what fruit is the closest to the player and computes the smallest path to it. Then, removes the eaten fruit, move the player's coordinate to the coordinate of the eaten fruit, and repeat the algorithm.
+The algorithm works as long as there are fruits on the map. It checks what fruit is the closest to the player and computes the smallest path to it by Dijkstra's algorithm (https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm). Then, removes the eaten fruit, move the player's coordinate to the coordinate of the eaten fruit, and repeat the algorithm.
 
 ## MyFrame:
 A class that represents the game frame.
