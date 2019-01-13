@@ -1,6 +1,7 @@
 
-This project is a kind of a pacman game, and like any pacman game, there are fruits that need to be eaten by the pacmans.\
-But what distinguishes this game is that the game background is a map that represents a real map which you can find on https://www.google.com/earth/.
+This project is a kind of a pacman game, and like any pacman game, fruits are eaten by the pacmans. But this game is obout our player. He needs to eat all the fruits at the best time and get the best score he can. He can also eats pacmans (and gets more score for it), but there are ghosts that run after him and while they touch him he looses score.\
+
+What distinguishes this game is that the game background is a map that represents a real map which you can find on https://www.google.com/earth/.
 
 (The game background map)
 ![alt text](https://github.com/maayanbuzaglo/OopNavigtion/blob/master/pictures/Ariel1.png)
