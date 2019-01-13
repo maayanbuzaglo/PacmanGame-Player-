@@ -220,9 +220,9 @@ public class Algorithm {
 			System.out.print(shortPath.get(i) + ",");
 		}
 
-		for (int j = 1; j < shortPath.size()-1; j++) {
+		for (int j = 1; j < shortPath.size() - 1; j++) {
 
-			Point3D p = new Point3D(outPoints.get(Integer.parseInt(shortPath.get(j))).y(), outPoints.get(Integer.parseInt(shortPath.get(j))).x());
+			Point3D p = new Point3D(outPoints.get(Integer.parseInt(shortPath.get(j)) - 1).y(), outPoints.get(Integer.parseInt(shortPath.get(j)) - 1).x());
 			shortestPath.add(p);
 		}
 		
@@ -358,10 +358,10 @@ public class Algorithm {
 	 */
 	public static void main(String[] args) throws IOException {
 
-		Game game = new Game("C:\\Users\\nahama\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example9.csv");
+		Game game = new Game("C:\\Users\\מעיין\\eclipse-workspace\\PacmanGame\\data\\Ex4_OOP_example4.csv");
 		Algorithm algo = new Algorithm();
-		Point3D A = new Point3D(game.getPackman(2).getLocation().y(),game.getPackman(2).getLocation().x());
-		Point3D B = new Point3D(game.getTarget(7).getLocation().y(),game.getTarget(7).getLocation().x());
+		Point3D A = new Point3D(game.getPackman(0).getLocation().y(),game.getPackman(0).getLocation().x());
+		Point3D B = new Point3D(game.getTarget(5).getLocation().y(),game.getTarget(5).getLocation().x());
 		algo.MAIN(A, B, game);
 		System.out.println(algo.shortestPath);
 	}

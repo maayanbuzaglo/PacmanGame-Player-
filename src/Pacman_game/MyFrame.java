@@ -664,8 +664,6 @@ public class MyFrame extends JFrame implements MouseListener {
 
 					System.out.println("***** Step " + i + " *****");
 
-					System.out.println(algo.shortestPath.get(k));
-
 					//getS the current score of the game.
 					String info = play.getStatistics();
 					System.out.println(info);
@@ -727,9 +725,23 @@ public class MyFrame extends JFrame implements MouseListener {
 
 						e.printStackTrace();
 					}
-					if (player.getLocation().equalsXY(algo.shortestPath.get(k))) {
+					Point3D temp = new Point3D(algo.shortestPath.get(k).y(), algo.shortestPath.get(k).x());
+					double tempNum1 = temp.x() * 10000;
+					tempNum1 = (int)tempNum1;
+					tempNum1 = tempNum1 / 10000;
+					double tempNum2 = player.getLocation().x() * 10000;
+					tempNum2 = (int)tempNum2;
+					tempNum2 = tempNum2 / 10000;
+					System.out.println("========================================"+tempNum1);
+					System.out.println("========================================"+tempNum2);
+
+					if (tempNum1 == tempNum2 && k == 0) {
 						k++;
 					}
+//					if (temp.equals(player.getLocation())) {
+//						k++;
+//					}
+					
 				}
 //			}
 		}
