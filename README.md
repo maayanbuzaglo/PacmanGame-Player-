@@ -1,5 +1,5 @@
 
-This project is a kind of a pacman game, and like any pacman game, fruits are eaten by the pacmans. But this game is obout our player. He needs to eat all the fruits at the best time and to get the best score he can. He can also eat pacmans (and get more score for it), but there are ghosts that run after him and while they touch him he looses score. Beyond that, there are black boxes where the player can not walk (pacmans and ghosts can), once he reaches the borders of the boxes he's stuck in place. As long as he's stuck, he looses score.
+This project is a kind of a pacman game, and like any pacman game, fruits are eaten by the pacmans. But this game is about our player. He needs to eat all the fruits at the best time and to get the best score he can. He can also eat pacmans (and get more score for it), but there are ghosts that run after him and while they touch him he looses score. Beyond that, there are black boxes where the player can not walk (pacmans and ghosts can), once he reaches the borders of the boxes he's stuck in place. As long as he's stuck, he looses score.
 
 What distinguishes this game is that the game background is a map that represents a real map which you can find on https://www.google.com/earth/.
 ***Learn more about Global's coordinate system here: https://en.wikipedia.org/wiki/Geographic_coordinate_system.***
